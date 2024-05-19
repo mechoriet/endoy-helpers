@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.endoy.minecraft</groupId>
         <artifactId>helpers</artifactId>
-        <version>0.0.5</version>
+        <version>0.0.6</version>
     </parent>
 
     <groupId>dev.endoy.minecraft.helpers</groupId>
@@ -33,6 +33,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.32</version>
@@ -54,6 +60,12 @@
             <groupId>be.dieterblancke.configuration</groupId>
             <artifactId>ConfigurationAPI</artifactId>
             <version>3.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -89,7 +101,11 @@
                     <relocations>
                         <relocation>
                             <pattern>com.google</pattern>
-                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.guava</shadedPattern>
+                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.google</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>javax.validation</pattern>
+                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.javax.validation</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.slf4j</pattern>

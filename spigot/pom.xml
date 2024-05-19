@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.endoy.minecraft</groupId>
         <artifactId>helpers</artifactId>
-        <version>0.0.5</version>
+        <version>0.0.6</version>
     </parent>
 
     <groupId>dev.endoy.minecraft.helpers</groupId>
