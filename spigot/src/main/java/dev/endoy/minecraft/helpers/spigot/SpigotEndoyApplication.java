@@ -26,7 +26,7 @@ public class SpigotEndoyApplication extends EndoyApplication
         this.plugin = plugin;
         this.currentClass = clazz;
         this.spigotTaskManager = new SpigotTaskManager( plugin );
-        this.injector = Injector.forProject( this.currentClass );
+        this.injector = Injector.forProject( this.currentClass, this );
         this.injector.registerInjectable( TaskManager.class, this.spigotTaskManager );
         this.injector.registerInjectable( EndoyApplication.class, this );
         this.injector.registerInjectable( SpigotEndoyApplication.class, this );
