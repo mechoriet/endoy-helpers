@@ -1,19 +1,32 @@
 package dev.endoy.minecraft.helpers.logger;
 
+import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import org.slf4j.impl.SimpleLoggerFactory;
 
 public class Logger
 {
 
-    private static final SimpleLoggerFactory simpleLoggerFactory = new SimpleLoggerFactory();
     private final org.slf4j.Logger logger;
     private final Class<?> currentClass;
 
     public Logger( Class<?> clazz )
     {
         this.currentClass = clazz;
-        this.logger = simpleLoggerFactory.getLogger( clazz.getName() );
+
+        Thread currentThread = Thread.currentThread();
+        ClassLoader previousClassLoader = currentThread.getContextClassLoader();
+
+        try
+        {
+            // Temporarily set the context class loader to the Logger class loader so slf4j can find it's relocated classes
+            currentThread.setContextClassLoader( SimpleLoggerFactory.class.getClassLoader() );
+            this.logger = LoggerFactory.getLogger( clazz.getName() );
+        }
+        finally
+        {
+            currentThread.setContextClassLoader( previousClassLoader );
+        }
     }
 
     public static Logger forClass( Class<?> clazz )
