@@ -74,7 +74,7 @@ public class ConfigurationInjector
                             field.getType(),
                             fieldInstance,
                             configuration,
-                            prefix + ( value.path().isEmpty() ? Utils.convertCamelCaseToDotNotation( field.getName() ) : value.path() ) + "."
+                            prefix + ( value.path().isEmpty() ? Utils.convertCamelCaseToDashNotation( field.getName() ) : value.path() ) + "."
                         );
 
                         ReflectionUtils.setFieldValue( field, instance, fieldInstance );
@@ -104,6 +104,6 @@ public class ConfigurationInjector
 
     public Object getConfigurationValue( IConfiguration configuration, String name, Value value )
     {
-        return configuration.get( value.path().isEmpty() ? Utils.convertCamelCaseToDotNotation( name ) : value.path() );
+        return configuration.get( value.path().isEmpty() ? Utils.convertCamelCaseToDashNotation( name ) : value.path() );
     }
 }

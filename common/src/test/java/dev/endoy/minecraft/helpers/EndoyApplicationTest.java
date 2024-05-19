@@ -3,6 +3,7 @@ package dev.endoy.minecraft.helpers;
 import dev.endoy.minecraft.helpers.injector.Injector;
 import dev.endoy.minecraft.helpers.task.TaskManager;
 import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,9 @@ public abstract class EndoyApplicationTest extends EndoyApplication
 {
 
     private File dataFolder;
+    @Getter
+    @Setter
+    private Injector injector;
 
     public EndoyApplicationTest()
     {
@@ -66,11 +70,5 @@ public abstract class EndoyApplicationTest extends EndoyApplication
 
             }
         };
-    }
-
-    @Override
-    public Injector getInjector()
-    {
-        return null;
     }
 }

@@ -3,7 +3,9 @@ package dev.endoy.minecraft.helpers.configuration;
 import be.dieterblancke.configuration.api.FileStorageType;
 import be.dieterblancke.configuration.api.IConfiguration;
 import be.dieterblancke.configuration.api.ISection;
+import be.dieterblancke.configuration.json.JsonConfigurationOptions;
 import be.dieterblancke.configuration.yaml.YamlConfiguration;
+import be.dieterblancke.configuration.yaml.YamlConfigurationOptions;
 import be.dieterblancke.configuration.yaml.comments.CommentType;
 import dev.endoy.minecraft.helpers.EndoyApplication;
 import dev.endoy.minecraft.helpers.injector.Comment;
@@ -76,7 +78,10 @@ public class ConfigurationManager
     {
         return configurations.computeIfAbsent( filePath, key -> IConfiguration.loadConfiguration(
             fileStorageType,
-            new File( endoyApplication.getDataFolder(), filePath )
+            new File( endoyApplication.getDataFolder(), filePath ),
+            fileStorageType == FileStorageType.YAML
+                ? YamlConfigurationOptions.builder().useComments( true ).build()
+                : JsonConfigurationOptions.builder().build()
         ) );
     }
 
@@ -95,7 +100,7 @@ public class ConfigurationManager
             }
 
             Value value = declaredField.getAnnotation( Value.class );
-            String path = value.path().isEmpty() ? Utils.convertCamelCaseToDotNotation( declaredField.getName() ) : value.path();
+            String path = value.path().isEmpty() ? Utils.convertCamelCaseToDashNotation( declaredField.getName() ) : value.path();
 
             Object fieldValue;
             try
@@ -110,7 +115,7 @@ public class ConfigurationManager
             if ( configuration instanceof YamlConfiguration yamlConfiguration && declaredField.isAnnotationPresent( Comment.class ) )
             {
                 Comment comment = declaredField.getAnnotation( Comment.class );
-                yamlConfiguration.setComment( path, String.join( "\n", comment.value() ), CommentType.BLOCK );
+                yamlConfiguration.setComment( prefix + path, String.join( "\n", comment.value() ), CommentType.BLOCK );
             }
 
             if ( declaredField.getType().isAnnotationPresent( ConfigurationSection.class ) )

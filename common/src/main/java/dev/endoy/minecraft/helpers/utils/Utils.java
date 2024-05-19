@@ -7,8 +7,8 @@ public class Utils
     {
     }
 
-    public static String convertCamelCaseToDotNotation( String camelCase )
+    public static String convertCamelCaseToDashNotation( String camelCase )
     {
-        return camelCase.replaceAll( "([a-z])([A-Z]+)", "$1.$2" ).toLowerCase();
+        return camelCase.replaceAll( "([a-z])([A-Z]+)", "$1-$2" ).toLowerCase();
     }
 }
