@@ -18,13 +18,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <distributionManagement>
-        <repository>
-            <id>endoy</id>
-            <url>https://repo.endoy.dev/artifactory/dieterblancke-public/</url>
-        </repository>
-    </distributionManagement>
-
     <repositories>
         <repository>
             <id>spigot-repo</id>
