@@ -1,6 +1,7 @@
 package dev.endoy.minecraft.helpers;
 
 import dev.endoy.minecraft.helpers.configuration.ConfigurationManager;
+import dev.endoy.minecraft.helpers.injector.Injector;
 import dev.endoy.minecraft.helpers.task.TaskManager;
 import lombok.Getter;
 
@@ -20,4 +21,13 @@ public abstract class EndoyApplication
     public abstract TaskManager getTaskManager();
 
     public abstract File getDataFolder();
+
+    public abstract Injector getInjector();
+
+    public void registerDefaultInjectables()
+    {
+        this.getInjector().registerInjectable( ConfigurationManager.class, this.configurationManager );
+        this.getInjector().registerInjectable( TaskManager.class, this.getTaskManager() );
+        this.getInjector().registerInjectable( EndoyApplication.class, this );
+    }
 }

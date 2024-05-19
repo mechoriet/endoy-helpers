@@ -33,6 +33,11 @@ public class Injector
 
     public void registerInjectable( Class<?> clazz, Object instance )
     {
+        if ( instance == null )
+        {
+            throw new IllegalArgumentException( "Instance cannot be null" );
+        }
+
         this.injectables.put( clazz, instance );
     }
 

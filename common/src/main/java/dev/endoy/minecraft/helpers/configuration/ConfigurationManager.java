@@ -15,6 +15,7 @@ import dev.endoy.minecraft.helpers.utils.Utils;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,17 +27,49 @@ public class ConfigurationManager
     private final EndoyApplication endoyApplication;
     private final Map<String, IConfiguration> configurations = new ConcurrentHashMap<>();
 
+    public void createDefault( Object config )
+    {
+        this.validateConfig( config );
+
+        Configuration configuration = config.getClass().getAnnotation( Configuration.class );
+        File file = new File( endoyApplication.getDataFolder(), configuration.filePath() );
+
+        if ( !file.exists() )
+        {
+            try
+            {
+                if ( !file.getParentFile().exists() )
+                {
+                    file.getParentFile().mkdirs();
+                }
+
+                file.createNewFile();
+                this.save( config );
+            }
+            catch ( IOException e )
+            {
+                throw new ConfigurationException( "Failed to create default configuration file", e );
+            }
+        }
+    }
+
     public void save( Object config )
     {
-        if ( !config.getClass().isAnnotationPresent( Configuration.class ) )
-        {
-            throw new InvalidConfigurationException( "Class " + config.getClass().getName() + " is not annotated with @Configuration" );
-        }
+        this.validateConfig( config );
 
         Configuration configurationAnnotation = config.getClass().getAnnotation( Configuration.class );
         IConfiguration configuration = this.getOrLoadConfig( configurationAnnotation.fileType(), configurationAnnotation.filePath() );
 
         this.writeFieldsToConfiguration( configuration, config.getClass(), config, "" );
+
+        try
+        {
+            configuration.save();
+        }
+        catch ( IOException e )
+        {
+            throw new ConfigurationException( "Failed to save configuration file", e );
+        }
     }
 
     public IConfiguration getOrLoadConfig( FileStorageType fileStorageType, String filePath )
@@ -85,6 +118,14 @@ public class ConfigurationManager
             {
                 configuration.set( path, fieldValue );
             }
+        }
+    }
+
+    private void validateConfig( Object config )
+    {
+        if ( !config.getClass().isAnnotationPresent( Configuration.class ) )
+        {
+            throw new ConfigurationException( "Class " + config.getClass().getName() + " is not annotated with @Configuration" );
         }
     }
 }

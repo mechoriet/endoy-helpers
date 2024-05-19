@@ -26,12 +26,9 @@ public class SpigotEndoyApplication extends EndoyApplication
         this.plugin = plugin;
         this.currentClass = clazz;
         this.spigotTaskManager = new SpigotTaskManager( plugin );
+
         this.injector = Injector.forProject( this.currentClass, this );
-        this.injector.registerInjectable( TaskManager.class, this.spigotTaskManager );
-        this.injector.registerInjectable( EndoyApplication.class, this );
-        this.injector.registerInjectable( SpigotEndoyApplication.class, this );
-        this.injector.registerInjectable( Injector.class, this.injector );
-        this.injector.registerInjectable( plugin.getClass(), plugin );
+        this.registerDefaultInjectables();
         this.injector.inject();
     }
 
@@ -50,5 +47,15 @@ public class SpigotEndoyApplication extends EndoyApplication
     public File getDataFolder()
     {
         return this.plugin.getDataFolder();
+    }
+
+    @Override
+    public void registerDefaultInjectables()
+    {
+        super.registerDefaultInjectables();
+
+        this.injector.registerInjectable( SpigotEndoyApplication.class, this );
+        this.injector.registerInjectable( Injector.class, this.injector );
+        this.injector.registerInjectable( plugin.getClass(), plugin );
     }
 }
