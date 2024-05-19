@@ -21,7 +21,7 @@
     <repositories>
         <repository>
             <id>endoy</id>
-            <url>https://repo.endoy.dev/repository/dieterblancke-public/</url>
+            <url>https://repo.endoy.dev/artifactory/dieterblancke-public/</url>
         </repository>
     </repositories>
 
