@@ -1,5 +1,6 @@
 package dev.endoy.minecraft.helpers;
 
+import dev.endoy.minecraft.helpers.injector.Injector;
 import dev.endoy.minecraft.helpers.task.TaskManager;
 import lombok.Getter;
 import org.junit.jupiter.api.AfterAll;
@@ -65,5 +66,11 @@ public abstract class EndoyApplicationTest extends EndoyApplication
 
             }
         };
+    }
+
+    @Override
+    public Injector getInjector()
+    {
+        return null;
     }
 }
