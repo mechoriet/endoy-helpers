@@ -83,6 +83,11 @@ public class ConfigurationInjector
                     {
                         Object configValue = getConfigurationValue( configuration, field.getName(), value );
 
+                        if ( configValue == null ) // allow default values to flourish
+                        {
+                            return;
+                        }
+
                         ReflectionUtils.setFieldValue( field, instance, configValue );
                     }
                 }

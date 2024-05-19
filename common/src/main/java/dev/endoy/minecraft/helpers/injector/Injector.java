@@ -52,7 +52,6 @@ public class Injector
         this.validateInjectableConstructors();
 
         this.configurationInjector.inject();
-        this.injectConfigurations();
         this.initializeCommands();
         this.initializeComponents();
         this.initializeManagers();
@@ -76,11 +75,6 @@ public class Injector
                     throw new InvalidInjectionContextException( "Injectable class must have exactly one constructor: " + clazz.getName() );
                 }
             } );
-    }
-
-    private void injectConfigurations()
-    {
-        this.initializeInjectablesOfType( Configuration.class );
     }
 
     private void initializeCommands()
