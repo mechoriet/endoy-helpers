@@ -87,7 +87,7 @@ public class ConfigurationInjector
                     }
                     else if ( field.isAnnotationPresent( Value.class ) )
                     {
-                        Object configValue = getConfigurationValue( configuration, field.getName(), prefix, value );
+                        Object configValue = getConfigurationValue( configuration, prefix, field.getName(), value );
 
                         if ( configValue == null ) // allow default values to flourish
                         {
@@ -116,6 +116,6 @@ public class ConfigurationInjector
 
     public Object getConfigurationValue( IConfiguration configuration, String prefix, String name, Value value )
     {
-        return configuration.get( value.path().isEmpty() ? Utils.convertCamelCaseToDashNotation( name ) : value.path() );
+        return configuration.get( prefix + ( value.path().isEmpty() ? Utils.convertCamelCaseToDashNotation( name ) : value.path() ) );
     }
 }
