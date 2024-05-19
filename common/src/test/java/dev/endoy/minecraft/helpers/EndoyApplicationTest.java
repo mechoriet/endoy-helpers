@@ -2,10 +2,10 @@ package dev.endoy.minecraft.helpers;
 
 import dev.endoy.minecraft.helpers.task.TaskManager;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,14 +13,20 @@ import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
 @Getter
+@Disabled
 public class EndoyApplicationTest extends EndoyApplication
 {
 
     private File dataFolder;
 
-    @SneakyThrows
     public EndoyApplicationTest()
     {
+    }
+
+    @AfterAll
+    public static void teardown()
+    {
+        EndoyApplication.setInstance( null );
     }
 
     @BeforeEach
@@ -33,12 +39,6 @@ public class EndoyApplicationTest extends EndoyApplication
     public void tearDown()
     {
         this.dataFolder.delete();
-    }
-
-    @AfterAll
-    public static void teardown()
-    {
-        EndoyApplication.setInstance(null);
     }
 
     @Override
