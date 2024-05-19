@@ -31,6 +31,7 @@ public class SpigotEndoyApplication extends EndoyApplication
         this.injector.registerInjectable( EndoyApplication.class, this );
         this.injector.registerInjectable( SpigotEndoyApplication.class, this );
         this.injector.registerInjectable( Injector.class, this.injector );
+        this.injector.registerInjectable( plugin.getClass(), plugin );
         this.injector.inject();
     }
 
