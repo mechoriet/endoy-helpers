@@ -6,7 +6,7 @@
 
     <groupId>dev.endoy.minecraft</groupId>
     <artifactId>helpers</artifactId>
-    <version>0.0.13</version>
+    <version>0.0.14</version>
     <packaging>pom</packaging>
     <modules>
         <module>common</module>

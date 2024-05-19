@@ -27,11 +27,17 @@ public class ConfigurationInjector
     {
         this.injector.initializeInjectablesOfType(
             Configuration.class,
-            configurations -> configurations.forEach( configuration -> this.injectConfigurationFields(
-                configuration.instance().getClass(),
-                configuration.instance(),
-                configuration.annotation()
-            ) )
+            configurations -> configurations.forEach( configuration ->
+                {
+                    endoyApplication.getConfigurationManager().createDefault( configuration.instance().getClass() );
+
+                    this.injectConfigurationFields(
+                        configuration.instance().getClass(),
+                        configuration.instance(),
+                        configuration.annotation()
+                    );
+                }
+            )
         );
     }
 
