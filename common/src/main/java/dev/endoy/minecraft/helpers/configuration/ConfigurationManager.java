@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,11 +28,11 @@ public class ConfigurationManager
     private final EndoyApplication endoyApplication;
     private final Map<String, IConfiguration> configurations = new ConcurrentHashMap<>();
 
-    public void createDefault( Object config )
+    public void createDefault( Class<?> configClass )
     {
-        this.validateConfig( config );
+        this.validateConfig( configClass );
 
-        Configuration configuration = config.getClass().getAnnotation( Configuration.class );
+        Configuration configuration = configClass.getAnnotation( Configuration.class );
         File file = new File( endoyApplication.getDataFolder(), configuration.filePath() );
 
         if ( !file.exists() )
@@ -44,9 +45,9 @@ public class ConfigurationManager
                 }
 
                 file.createNewFile();
-                this.save( config );
+                this.save( configClass.getDeclaredConstructors()[0].newInstance() );
             }
-            catch ( IOException e )
+            catch ( IOException | InstantiationException | IllegalAccessException | InvocationTargetException e )
             {
                 throw new ConfigurationException( "Failed to create default configuration file", e );
             }
@@ -55,7 +56,7 @@ public class ConfigurationManager
 
     public void save( Object config )
     {
-        this.validateConfig( config );
+        this.validateConfig( config.getClass() );
 
         Configuration configurationAnnotation = config.getClass().getAnnotation( Configuration.class );
         IConfiguration configuration = this.getOrLoadConfig( configurationAnnotation.fileType(), configurationAnnotation.filePath() );
@@ -121,11 +122,11 @@ public class ConfigurationManager
         }
     }
 
-    private void validateConfig( Object config )
+    private void validateConfig( Class<?> configClass )
     {
-        if ( !config.getClass().isAnnotationPresent( Configuration.class ) )
+        if ( !configClass.isAnnotationPresent( Configuration.class ) )
         {
-            throw new ConfigurationException( "Class " + config.getClass().getName() + " is not annotated with @Configuration" );
+            throw new ConfigurationException( "Class " + configClass.getName() + " is not annotated with @Configuration" );
         }
     }
 }
