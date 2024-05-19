@@ -87,7 +87,7 @@ public class ConfigurationInjector
                     }
                     else if ( field.isAnnotationPresent( Value.class ) )
                     {
-                        Object configValue = getConfigurationValue( configuration, field.getName(), value );
+                        Object configValue = getConfigurationValue( configuration, field.getName(), prefix, value );
 
                         if ( configValue == null ) // allow default values to flourish
                         {
@@ -108,12 +108,13 @@ public class ConfigurationInjector
     {
         return getConfigurationValue(
             endoyApplication.getConfigurationManager().getOrLoadConfig( FileStorageType.YAML, "config.yml" ),
+            "",
             parameter.getName(),
             value
         );
     }
 
-    public Object getConfigurationValue( IConfiguration configuration, String name, Value value )
+    public Object getConfigurationValue( IConfiguration configuration, String prefix, String name, Value value )
     {
         return configuration.get( value.path().isEmpty() ? Utils.convertCamelCaseToDashNotation( name ) : value.path() );
     }
