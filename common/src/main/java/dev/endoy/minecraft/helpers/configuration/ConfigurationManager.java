@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -83,6 +82,11 @@ public class ConfigurationManager
 
     private void writeFieldsToConfiguration( IConfiguration configuration, Class<?> clazz, Object instance, String prefix )
     {
+        this.writeFieldsToConfiguration( configuration, configuration, clazz, instance, prefix );
+    }
+
+    private void writeFieldsToConfiguration( IConfiguration configuration, ISection currentSection, Class<?> clazz, Object instance, String prefix )
+    {
         for ( Field declaredField : clazz.getDeclaredFields() )
         {
             if ( !declaredField.isAnnotationPresent( Value.class ) )
@@ -111,13 +115,13 @@ public class ConfigurationManager
 
             if ( declaredField.getType().isAnnotationPresent( ConfigurationSection.class ) )
             {
-                ISection section = configuration.exists( path ) ? configuration.getSection( path ) : configuration.createSection( path );
-                writeFieldsToConfiguration( configuration, declaredField.getType(), fieldValue, prefix + path + "." );
-                configuration.set( path, section );
+                ISection section = currentSection.exists( path ) ? currentSection.getSection( path ) : currentSection.createSection( path );
+                writeFieldsToConfiguration( configuration, section, declaredField.getType(), fieldValue, prefix + path + "." );
+                currentSection.set( path, section );
             }
             else
             {
-                configuration.set( path, fieldValue );
+                currentSection.set( path, fieldValue );
             }
         }
     }

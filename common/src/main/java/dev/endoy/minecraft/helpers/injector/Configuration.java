@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 public @interface Configuration
 {
 
-    String filePath() default "";
+    String filePath();
 
     FileStorageType fileType() default FileStorageType.YAML;
 
