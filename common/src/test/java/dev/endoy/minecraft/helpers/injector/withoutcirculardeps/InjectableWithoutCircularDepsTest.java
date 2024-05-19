@@ -16,7 +16,7 @@ class InjectableWithoutCircularDepsTest extends EndoyApplicationTest
     @DisplayName( "Test normal injection to be functional" )
     void testInject()
     {
-        Injector injector = Injector.forProject( this.getClass() );
+        Injector injector = Injector.forProject( this.getClass(), this );
         injector.inject();
 
         assertEquals( injector.getInjectableInstance( TestComponentWithoutCircularDependency.class ).getTestComponent2().getNumber(), 1 );

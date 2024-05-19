@@ -17,16 +17,18 @@ public class Injector
     private final Class<?> currentClass;
     private final Map<Class<?>, Object> injectables = new HashMap<>();
     private final ConfigurationInjector configurationInjector;
+    private final EndoyApplication endoyApplication;
 
-    public Injector( Class<?> clazz )
+    public Injector( Class<?> clazz, EndoyApplication endoyApplication )
     {
         this.currentClass = clazz;
-        this.configurationInjector = ConfigurationInjector.forInjector( this );
+        this.configurationInjector = ConfigurationInjector.forInjector( this, endoyApplication );
+        this.endoyApplication = endoyApplication;
     }
 
-    public static Injector forProject( Class<?> clazz )
+    public static Injector forProject( Class<?> clazz, EndoyApplication endoyApplication )
     {
-        return new Injector( clazz );
+        return new Injector( clazz, endoyApplication );
     }
 
     public void registerInjectable( Class<?> clazz, Object instance )
@@ -109,7 +111,7 @@ public class Injector
             {
                 Task task = method.getAnnotation( Task.class );
 
-                EndoyApplication.getInstance().getTaskManager().registerTask( task, () ->
+                endoyApplication.getTaskManager().registerTask( task, () ->
                 {
                     try
                     {

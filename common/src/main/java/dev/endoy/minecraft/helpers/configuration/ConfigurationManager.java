@@ -10,15 +10,18 @@ import dev.endoy.minecraft.helpers.injector.Configuration;
 import dev.endoy.minecraft.helpers.injector.Value;
 import dev.endoy.minecraft.helpers.utils.ReflectionUtils;
 import dev.endoy.minecraft.helpers.utils.Utils;
+import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@RequiredArgsConstructor
 public class ConfigurationManager
 {
 
+    private final EndoyApplication endoyApplication;
     private final Map<String, IConfiguration> configurations = new ConcurrentHashMap<>();
 
     public void save( Class<?> configurationClass )
@@ -64,7 +67,7 @@ public class ConfigurationManager
     {
         return configurations.computeIfAbsent( filePath, key -> IConfiguration.loadConfiguration(
             fileStorageType,
-            new File( EndoyApplication.getInstance().getDataFolder(), filePath )
+            new File( endoyApplication.getDataFolder(), filePath )
         ) );
     }
 }

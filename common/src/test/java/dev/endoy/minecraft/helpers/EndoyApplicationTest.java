@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
 @Getter
-@Execution( ExecutionMode.SAME_THREAD )
 public abstract class EndoyApplicationTest extends EndoyApplication
 {
 
@@ -23,12 +22,6 @@ public abstract class EndoyApplicationTest extends EndoyApplication
 
     public EndoyApplicationTest()
     {
-    }
-
-    @AfterAll
-    public static void teardown()
-    {
-        EndoyApplication.setInstance( null );
     }
 
     @BeforeEach

@@ -20,7 +20,7 @@ class InjectableWithPostConstructTest extends EndoyApplicationTest
     @DisplayName( "Test PostConstruct to be functional" )
     void testInject()
     {
-        Injector injector = Injector.forProject( this.getClass() );
+        Injector injector = Injector.forProject( this.getClass(), this );
         injector.inject();
 
         assertTrue( postConstruct1Called );

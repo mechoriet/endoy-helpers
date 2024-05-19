@@ -17,7 +17,7 @@ public class InjectableWithFieldCircularDependencyTest extends EndoyApplicationT
     @DisplayName( "Test circular dependency detection with self-reference from it's own constructor" )
     void testInject()
     {
-        Injector injector = Injector.forProject( this.getClass() );
+        Injector injector = Injector.forProject( this.getClass(), this );
         injector.inject();
 
         TestComponent testComponent = injector.getInjectableInstance( TestComponent.class );

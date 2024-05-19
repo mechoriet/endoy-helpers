@@ -15,10 +15,11 @@ public class ConfigurationInjector
 {
 
     private final Injector injector;
+    private final EndoyApplication endoyApplication;
 
-    public static ConfigurationInjector forInjector( Injector injector )
+    public static ConfigurationInjector forInjector( Injector injector, EndoyApplication endoyApplication )
     {
-        return new ConfigurationInjector( injector );
+        return new ConfigurationInjector( injector, endoyApplication );
     }
 
     void inject()
@@ -38,7 +39,7 @@ public class ConfigurationInjector
         this.injectConfigurationFields(
             clazz,
             instance,
-            EndoyApplication.getInstance().getConfigurationManager().getOrLoadConfig( configuration.fileType(), configuration.filePath() )
+            endoyApplication.getConfigurationManager().getOrLoadConfig( configuration.fileType(), configuration.filePath() )
         );
     }
 
@@ -47,7 +48,7 @@ public class ConfigurationInjector
         this.injectConfigurationFields(
             clazz,
             instance,
-            EndoyApplication.getInstance().getConfigurationManager().getOrLoadConfig( FileStorageType.YAML, "config.yml" )
+            endoyApplication.getConfigurationManager().getOrLoadConfig( FileStorageType.YAML, "config.yml" )
         );
     }
 
@@ -74,7 +75,7 @@ public class ConfigurationInjector
     public Object getConfigurationValue( Parameter parameter, Value value )
     {
         return getConfigurationValue(
-            EndoyApplication.getInstance().getConfigurationManager().getOrLoadConfig( FileStorageType.YAML, "config.yml" ),
+            endoyApplication.getConfigurationManager().getOrLoadConfig( FileStorageType.YAML, "config.yml" ),
             parameter.getName(),
             value
         );

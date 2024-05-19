@@ -19,7 +19,7 @@ public class InjectableWithDeepCircularDependencyTest extends EndoyApplicationTe
     {
         assertThrows( CircularDependencyException.class, () ->
         {
-            Injector injector = Injector.forProject( this.getClass() );
+            Injector injector = Injector.forProject( this.getClass(), this );
             injector.inject();
         } );
     }

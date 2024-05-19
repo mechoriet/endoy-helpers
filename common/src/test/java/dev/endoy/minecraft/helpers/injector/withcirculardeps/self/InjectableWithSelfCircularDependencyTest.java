@@ -19,7 +19,7 @@ class InjectableWithSelfCircularDependencyTest extends EndoyApplicationTest
     {
         assertThrows( CircularDependencyException.class, () ->
         {
-            Injector injector = Injector.forProject( this.getClass() );
+            Injector injector = Injector.forProject( this.getClass(), this );
             injector.inject();
         } );
     }
