@@ -2,7 +2,6 @@ package dev.endoy.minecraft.helpers.logger;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
-import org.slf4j.impl.SimpleLoggerFactory;
 
 public class Logger
 {
@@ -20,7 +19,7 @@ public class Logger
         try
         {
             // Temporarily set the context class loader to the Logger class loader so slf4j can find it's relocated classes
-            currentThread.setContextClassLoader( SimpleLoggerFactory.class.getClassLoader() );
+            currentThread.setContextClassLoader( getClass().getClassLoader() );
             this.logger = LoggerFactory.getLogger( clazz.getName() );
         }
         finally
