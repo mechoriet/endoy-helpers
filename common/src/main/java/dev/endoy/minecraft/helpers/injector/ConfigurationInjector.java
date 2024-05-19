@@ -7,6 +7,7 @@ import dev.endoy.minecraft.helpers.utils.ReflectionUtils;
 import dev.endoy.minecraft.helpers.utils.Utils;
 import lombok.RequiredArgsConstructor;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
@@ -39,7 +40,8 @@ public class ConfigurationInjector
         this.injectConfigurationFields(
             clazz,
             instance,
-            endoyApplication.getConfigurationManager().getOrLoadConfig( configuration.fileType(), configuration.filePath() )
+            endoyApplication.getConfigurationManager().getOrLoadConfig( configuration.fileType(), configuration.filePath() ),
+            ""
         );
     }
 
@@ -48,24 +50,43 @@ public class ConfigurationInjector
         this.injectConfigurationFields(
             clazz,
             instance,
-            endoyApplication.getConfigurationManager().getOrLoadConfig( FileStorageType.YAML, "config.yml" )
+            endoyApplication.getConfigurationManager().getOrLoadConfig( FileStorageType.YAML, "config.yml" ),
+            ""
         );
     }
 
-    private void injectConfigurationFields( Class<?> clazz, Object instance, IConfiguration configuration )
+    private void injectConfigurationFields( Class<?> clazz, Object instance, IConfiguration configuration, String prefix )
     {
         Arrays.stream( clazz.getDeclaredFields() )
             .filter( field -> field.isAnnotationPresent( Value.class ) )
             .forEach( field ->
             {
-                Value value = field.getAnnotation( Value.class );
-                Object configValue = getConfigurationValue( configuration, field.getName(), value );
-
                 try
                 {
-                    ReflectionUtils.setFieldValue( field, instance, configValue );
+                    Value value = field.getAnnotation( Value.class );
+
+                    if ( field.getType().isAnnotationPresent( ConfigurationSection.class ) )
+                    {
+                        Class<?> fieldClass = field.getType();
+                        Object fieldInstance = fieldClass.getDeclaredConstructors()[0].newInstance();
+
+                        injectConfigurationFields(
+                            field.getType(),
+                            fieldInstance,
+                            configuration,
+                            prefix + ( value.path().isEmpty() ? Utils.convertCamelCaseToDotNotation( field.getName() ) : value.path() ) + "."
+                        );
+
+                        ReflectionUtils.setFieldValue( field, instance, fieldInstance );
+                    }
+                    else if ( field.isAnnotationPresent( Value.class ) )
+                    {
+                        Object configValue = getConfigurationValue( configuration, field.getName(), value );
+
+                        ReflectionUtils.setFieldValue( field, instance, configValue );
+                    }
                 }
-                catch ( IllegalAccessException e )
+                catch ( InstantiationException | InvocationTargetException | IllegalAccessException e )
                 {
                     throw new FailedInjectionException( e );
                 }
