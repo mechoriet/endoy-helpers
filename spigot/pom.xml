@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.endoy.minecraft</groupId>
         <artifactId>endoy-helpers</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
     <groupId>dev.endoy.minecraft.endoy-helpers</groupId>
@@ -18,11 +18,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>endoy</id>
+            <url>https://repo.endoy.dev/repository/dieterblancke-public/</url>
+        </repository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.17.1-R0.1-SNAPSHOT</version>
+            <version>1.20.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

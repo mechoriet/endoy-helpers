@@ -34,6 +34,7 @@ public class Injector
         this.injectables.put( clazz, instance );
     }
 
+    @SuppressWarnings( "unchecked" )
     public <T> T getInjectableInstance( Class<T> injectableClass )
     {
         return (T) this.injectables.get( injectableClass );
@@ -136,7 +137,7 @@ public class Injector
                 Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
                 this.validateConstructor( constructor );
 
-                return new InjectedType<T>( clazz.getAnnotation( annotationClass ), this.initializeInjectable( clazz ) );
+                return new InjectedType<>( clazz.getAnnotation( annotationClass ), this.initializeInjectable( clazz ) );
             } )
             .collect( Collectors.toList() );
 
