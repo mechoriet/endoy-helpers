@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.endoy.minecraft</groupId>
         <artifactId>helpers</artifactId>
-        <version>0.0.4</version>
+        <version>0.0.5</version>
     </parent>
 
     <groupId>dev.endoy.minecraft.helpers</groupId>
@@ -102,6 +102,22 @@
                         <relocation>
                             <pattern>be.dieterblancke.configuration</pattern>
                             <shadedPattern>dev.endoy.minecraft.helpers.libraries.configuration</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.sun.el</pattern>
+                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.el</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>javax.el</pattern>
+                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.javax.el</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>javax.annotation</pattern>
+                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.javax.annotation</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.checkerframework</pattern>
+                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.checkerframework</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
