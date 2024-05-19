@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.endoy.minecraft</groupId>
         <artifactId>helpers</artifactId>
-        <version>0.0.10</version>
+        <version>0.0.11</version>
     </parent>
 
     <groupId>dev.endoy.minecraft.helpers</groupId>
@@ -51,9 +51,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>be.dieterblancke.configuration</groupId>
+            <groupId>dev.endoy.configuration</groupId>
             <artifactId>ConfigurationAPI</artifactId>
-            <version>3.0.0</version>
+            <version>4.0.2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -100,7 +100,7 @@
                             <shadedPattern>libraries.endoy.helpers.cronutils</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>be.dieterblancke.configuration</pattern>
+                            <pattern>dev.endoy.configuration</pattern>
                             <shadedPattern>libraries.endoy.helpers.configuration</shadedPattern>
                         </relocation>
                         <relocation>

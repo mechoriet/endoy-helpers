@@ -1,7 +1,7 @@
 package dev.endoy.minecraft.helpers.injector;
 
-import be.dieterblancke.configuration.api.FileStorageType;
-import be.dieterblancke.configuration.api.IConfiguration;
+import dev.endoy.configuration.api.FileStorageType;
+import dev.endoy.configuration.api.IConfiguration;
 import dev.endoy.minecraft.helpers.EndoyApplication;
 import dev.endoy.minecraft.helpers.utils.ReflectionUtils;
 import dev.endoy.minecraft.helpers.utils.Utils;

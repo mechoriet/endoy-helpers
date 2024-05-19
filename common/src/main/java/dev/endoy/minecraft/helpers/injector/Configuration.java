@@ -1,6 +1,6 @@
 package dev.endoy.minecraft.helpers.injector;
 
-import be.dieterblancke.configuration.api.FileStorageType;
+import dev.endoy.configuration.api.FileStorageType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

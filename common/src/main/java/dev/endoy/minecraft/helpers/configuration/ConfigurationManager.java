@@ -1,12 +1,12 @@
 package dev.endoy.minecraft.helpers.configuration;
 
-import be.dieterblancke.configuration.api.FileStorageType;
-import be.dieterblancke.configuration.api.IConfiguration;
-import be.dieterblancke.configuration.api.ISection;
-import be.dieterblancke.configuration.json.JsonConfigurationOptions;
-import be.dieterblancke.configuration.yaml.YamlConfiguration;
-import be.dieterblancke.configuration.yaml.YamlConfigurationOptions;
-import be.dieterblancke.configuration.yaml.comments.CommentType;
+import dev.endoy.configuration.api.FileStorageType;
+import dev.endoy.configuration.api.IConfiguration;
+import dev.endoy.configuration.api.ISection;
+import dev.endoy.configuration.json.JsonConfigurationOptions;
+import dev.endoy.configuration.yaml.YamlConfiguration;
+import dev.endoy.configuration.yaml.YamlConfigurationOptions;
+import dev.endoy.configuration.yaml.comments.CommentType;
 import dev.endoy.minecraft.helpers.EndoyApplication;
 import dev.endoy.minecraft.helpers.injector.Comment;
 import dev.endoy.minecraft.helpers.injector.Configuration;
