@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dev.endoy.minecraft</groupId>
-        <artifactId>endoy-helpers</artifactId>
-        <version>0.0.1</version>
+        <artifactId>helpers</artifactId>
+        <version>0.0.2</version>
     </parent>
 
-    <groupId>dev.endoy.minecraft.endoy-helpers</groupId>
+    <groupId>dev.endoy.minecraft.helpers</groupId>
     <artifactId>common</artifactId>
 
     <properties>
