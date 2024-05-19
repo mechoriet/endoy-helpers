@@ -33,12 +33,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.32</version>
@@ -60,12 +54,6 @@
             <groupId>be.dieterblancke.configuration</groupId>
             <artifactId>ConfigurationAPI</artifactId>
             <version>3.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -101,39 +89,35 @@
                     <relocations>
                         <relocation>
                             <pattern>com.google</pattern>
-                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.google</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>javax.validation</pattern>
-                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.javax.validation</shadedPattern>
+                            <shadedPattern>libraries.endoy.helpers.google</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.slf4j</pattern>
-                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.slf4j</shadedPattern>
+                            <shadedPattern>libraries.endoy.helpers.slf4j</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.cronutils</pattern>
-                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.cronutils</shadedPattern>
+                            <shadedPattern>libraries.endoy.helpers.cronutils</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>be.dieterblancke.configuration</pattern>
-                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.configuration</shadedPattern>
+                            <shadedPattern>libraries.endoy.helpers.configuration</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.sun.el</pattern>
-                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.el</shadedPattern>
+                            <shadedPattern>libraries.endoy.helpers.el</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>javax.el</pattern>
-                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.javax.el</shadedPattern>
+                            <shadedPattern>libraries.endoy.helpers.javax.el</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>javax.annotation</pattern>
-                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.javax.annotation</shadedPattern>
+                            <shadedPattern>libraries.endoy.helpers.javax.annotation</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.checkerframework</pattern>
-                            <shadedPattern>dev.endoy.minecraft.helpers.libraries.checkerframework</shadedPattern>
+                            <shadedPattern>libraries.endoy.helpers.checkerframework</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
