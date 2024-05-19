@@ -45,9 +45,9 @@ public class ConfigurationManager
                 }
 
                 file.createNewFile();
-                this.save( configClass.getDeclaredConstructors()[0].newInstance() );
+                this.save( endoyApplication.getInjector().getInjectableInstance( configClass ) );
             }
-            catch ( IOException | InstantiationException | IllegalAccessException | InvocationTargetException e )
+            catch ( IOException e )
             {
                 throw new ConfigurationException( "Failed to create default configuration file", e );
             }
