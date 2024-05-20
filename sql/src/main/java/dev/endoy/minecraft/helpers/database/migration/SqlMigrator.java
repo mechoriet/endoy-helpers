@@ -14,13 +14,13 @@ import java.sql.Statement;
 import java.util.Objects;
 
 @Builder
-public class MigrationManager
+public class SqlMigrator
 {
 
     private final DataSource dataSource;
     private final Class<?> initMigrationClass;
 
-    public MigrationManager load()
+    public SqlMigrator load()
     {
         try ( Connection connection = dataSource.getConnection() )
         {
