@@ -57,6 +57,15 @@ public class ReflectionUtils
             .collect( Collectors.toList() );
     }
 
+
+    public static Collection<Class<?>> getClassesInPackageImplementing( Class<?> baseClass, Class<?> interfaceClass )
+    {
+        return getClassesInPackage( baseClass )
+            .stream()
+            .filter( interfaceClass::isAssignableFrom )
+            .collect( Collectors.toList() );
+    }
+
     public static List<Class<?>> getClassesInPackage( Class<?> starterClass )
     {
         List<Class<?>> classes;
@@ -130,5 +139,18 @@ public class ReflectionUtils
         }
 
         return classes;
+    }
+
+    public static Object createInstance( Class<?> clazz )
+    {
+        try
+        {
+            return clazz.getDeclaredConstructor().newInstance();
+        }
+        catch ( ReflectiveOperationException e )
+        {
+            LOGGER.error( "Failed to create instance of class: " + clazz.getName(), e );
+            return null;
+        }
     }
 }

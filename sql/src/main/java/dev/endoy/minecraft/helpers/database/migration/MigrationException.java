@@ -17,4 +17,5 @@ public class MigrationException extends RuntimeException
     {
         super( cause );
     }
+
 }
