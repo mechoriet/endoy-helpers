@@ -6,12 +6,11 @@
 
     <groupId>dev.endoy.minecraft</groupId>
     <artifactId>helpers</artifactId>
-    <version>0.0.17</version>
+    <version>0.0.18</version>
     <packaging>pom</packaging>
     <modules>
         <module>common</module>
         <module>spigot</module>
-        <module>sql</module>
     </modules>
 
     <properties>
