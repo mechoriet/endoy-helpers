@@ -24,6 +24,8 @@ public abstract class EndoyApplication
 
     public abstract Injector getInjector();
 
+    public abstract void registerListeners( Object listenersInstance );
+
     public void registerDefaultInjectables()
     {
         this.getInjector().registerInjectable( ConfigurationManager.class, this.configurationManager );

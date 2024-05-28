@@ -53,6 +53,7 @@ public class Injector
 
         this.configurationInjector.inject();
         this.initializeCommands();
+        this.initializeListeners();
         this.initializeComponents();
         this.initializeManagers();
         this.initializeServices();
@@ -84,6 +85,12 @@ public class Injector
 //        {
 //            // TODO: implement
 //        } );
+    }
+
+    private void initializeListeners()
+    {
+        this.initializeInjectablesOfType( Listeners.class, listeners ->
+            listeners.forEach( listener -> this.endoyApplication.registerListeners( listener.instance ) ) );
     }
 
     private void initializeComponents()
@@ -303,7 +310,7 @@ public class Injector
 
     private List<Class<? extends Annotation>> getInjectableAnnotations()
     {
-        return List.of( Configuration.class, Command.class, Component.class, Manager.class, Service.class, Task.class );
+        return List.of( Configuration.class, Command.class, Listeners.class, Component.class, Manager.class, Service.class, Task.class );
     }
 
     record InjectedType<T>(T annotation, Object instance)

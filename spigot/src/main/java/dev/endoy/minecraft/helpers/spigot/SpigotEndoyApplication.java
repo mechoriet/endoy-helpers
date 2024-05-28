@@ -5,6 +5,7 @@ import dev.endoy.minecraft.helpers.injector.Injector;
 import dev.endoy.minecraft.helpers.spigot.task.SpigotTaskManager;
 import dev.endoy.minecraft.helpers.task.TaskManager;
 import lombok.Getter;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -47,6 +48,12 @@ public class SpigotEndoyApplication extends EndoyApplication
     public File getDataFolder()
     {
         return this.plugin.getDataFolder();
+    }
+
+    @Override
+    public void registerListeners( Object listenersInstance )
+    {
+        this.plugin.getServer().getPluginManager().registerEvents( (Listener) listenersInstance, this.plugin );
     }
 
     @Override
