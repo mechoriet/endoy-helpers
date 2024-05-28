@@ -9,7 +9,7 @@
         <version>0.0.19</version>
     </parent>
 
-    <groupId>dev.endoy</groupId>
+    <groupId>dev.endoy.minecraft.helpers</groupId>
     <artifactId>sql</artifactId>
 
     <properties>
