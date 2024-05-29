@@ -109,7 +109,7 @@ public class SqlMigrator
                         connection.setAutoCommit( false );
                         migration.migrate( connection );
 
-                        try ( PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO migrations (version, name, success) VALUES (?, ?)" ) )
+                        try ( PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO migrations (version, name, success) VALUES (?, ?, ?)" ) )
                         {
                             preparedStatement.setInt( 1, migrationVersion );
                             preparedStatement.setString( 2, migration.getClass().getSimpleName() );
@@ -168,7 +168,7 @@ public class SqlMigrator
         {
             connection.setAutoCommit( false );
 
-            try ( PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO migrations (version, name, success) VALUES (?, ?)" ) )
+            try ( PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO migrations (version, name, success) VALUES (?, ?, ?)" ) )
             {
                 preparedStatement.setInt( 1, version );
                 preparedStatement.setString( 2, migration.getClass().getSimpleName() );
