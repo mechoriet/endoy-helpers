@@ -63,6 +63,7 @@ public class ReflectionUtils
         return getClassesInPackage( baseClass )
             .stream()
             .filter( interfaceClass::isAssignableFrom )
+            .filter( clazz -> !clazz.equals( interfaceClass ) )
             .collect( Collectors.toList() );
     }
 

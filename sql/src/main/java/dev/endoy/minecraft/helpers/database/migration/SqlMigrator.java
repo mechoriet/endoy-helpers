@@ -50,9 +50,14 @@ public class SqlMigrator
                             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
                         );
                         """ );
-                }
 
-                connection.commit();
+                    connection.commit();
+                }
+                catch ( SQLException e )
+                {
+                    connection.rollback();
+                    throw new MigrationException( e );
+                }
             }
         }
         catch ( SQLException e )
@@ -78,6 +83,8 @@ public class SqlMigrator
 
             try ( Connection connection = dataSource.getConnection() )
             {
+                connection.setAutoCommit( false );
+
                 Optional<MigrationRecord> optionalMigrationRecord = this.fetchMigrationRecordForVersion( connection, migrationVersion );
 
                 if ( optionalMigrationRecord.isPresent() )
@@ -106,7 +113,6 @@ public class SqlMigrator
                     {
                         logger.debug( "Running migration: " + migration.getClass().getSimpleName() + "." );
 
-                        connection.setAutoCommit( false );
                         migration.migrate( connection );
 
                         try ( PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO migrations (version, name, success) VALUES (?, ?, ?)" ) )
@@ -121,6 +127,7 @@ public class SqlMigrator
                     }
                     catch ( Exception e )
                     {
+                        connection.rollback();
                         this.registerFailedMigration( migrationVersion, migration );
                         throw new MigrationException( e );
                     }
