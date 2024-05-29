@@ -1,20 +1,24 @@
 package dev.endoy.minecraft.helpers.database.migration;
 
 import dev.endoy.minecraft.helpers.database.helpers.SqlHelpers;
+import dev.endoy.minecraft.helpers.logger.Logger;
 import dev.endoy.minecraft.helpers.utils.ReflectionUtils;
 import lombok.Builder;
+import lombok.Value;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Builder
 public class SqlMigrator
 {
 
+    private static final Logger logger = Logger.forClass( SqlMigrator.class );
     private final DataSource dataSource;
     private final Class<?> initMigrationClass;
 
@@ -40,6 +44,7 @@ public class SqlMigrator
                     statement.executeUpdate( """
                         CREATE TABLE migrations (
                             id SERIAL PRIMARY KEY,
+                            version INT NOT NULL,
                             name VARCHAR(255) NOT NULL,
                             success BOOLEAN,
                             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -69,28 +74,60 @@ public class SqlMigrator
 
         for ( Migration migration : migrations )
         {
+            int migrationVersion = this.getMigrationVersion( migration );
+
             try ( Connection connection = dataSource.getConnection() )
             {
-                if ( !this.shouldMigrate( connection, migration.getClass().getSimpleName() ) )
+                Optional<MigrationRecord> optionalMigrationRecord = this.fetchMigrationRecordForVersion( connection, migrationVersion );
+
+                if ( optionalMigrationRecord.isPresent() )
                 {
-                    break;
+                    MigrationRecord migrationRecord = optionalMigrationRecord.get();
+
+                    if ( migrationRecord.isSuccess() )
+                    {
+                        if ( migrationRecord.getName().equalsIgnoreCase( migration.getClass().getSimpleName() ) )
+                        {
+                            logger.debug( "Skipping: " + migration.getClass().getSimpleName() + " since it has already been migrated." );
+                        }
+                        else
+                        {
+                            throw new MigrationException( "Another migration has already been run for version " + migrationVersion + ". (local: " + migration.getClass().getSimpleName() + ", db: " + migrationRecord.getName() + ")" );
+                        }
+                    }
+                    else
+                    {
+                        throw new MigrationException( "Migration " + migrationRecord.getName() + " has failed during a previous run. Please delete the record from the migrations table to retry." );
+                    }
                 }
-
-                connection.setAutoCommit( false );
-                migration.migrate( connection );
-
-                try ( PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO migrations (name, success) VALUES (?, ?)" ) )
+                else
                 {
-                    preparedStatement.setString( 1, migration.getClass().getSimpleName() );
-                    preparedStatement.setBoolean( 2, true );
-                    preparedStatement.executeUpdate();
-                }
+                    try
+                    {
+                        logger.debug( "Running migration: " + migration.getClass().getSimpleName() + "." );
 
-                connection.commit();
+                        connection.setAutoCommit( false );
+                        migration.migrate( connection );
+
+                        try ( PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO migrations (version, name, success) VALUES (?, ?)" ) )
+                        {
+                            preparedStatement.setInt( 1, migrationVersion );
+                            preparedStatement.setString( 2, migration.getClass().getSimpleName() );
+                            preparedStatement.setBoolean( 3, true );
+                            preparedStatement.executeUpdate();
+                        }
+
+                        connection.commit();
+                    }
+                    catch ( Exception e )
+                    {
+                        this.registerFailedMigration( migrationVersion, migration );
+                        throw new MigrationException( e );
+                    }
+                }
             }
             catch ( SQLException e )
             {
-                this.registerFailedMigration( migration );
                 throw new MigrationException( e );
             }
         }
@@ -102,30 +139,40 @@ public class SqlMigrator
         return Integer.parseInt( className.substring( 1, className.indexOf( "__" ) ) );
     }
 
-    private boolean shouldMigrate( Connection connection, String migrationName ) throws SQLException
+    private Optional<MigrationRecord> fetchMigrationRecordForVersion( Connection connection, int version ) throws SQLException
     {
-        try ( PreparedStatement preparedStatement = connection.prepareStatement( "SELECT COUNT(*) FROM migrations WHERE name = ? AND success = ?" ) )
+        try ( PreparedStatement preparedStatement = connection.prepareStatement( "SELECT * FROM migrations WHERE version = ?" ) )
         {
-            preparedStatement.setString( 1, migrationName );
-            preparedStatement.setBoolean( 2, true );
+            preparedStatement.setInt( 1, version );
 
             try ( ResultSet resultSet = preparedStatement.executeQuery() )
             {
-                return resultSet.next() && resultSet.getInt( 1 ) == 0;
+                if ( resultSet.next() )
+                {
+                    return Optional.of( new MigrationRecord(
+                        resultSet.getInt( "id" ),
+                        resultSet.getInt( "version" ),
+                        resultSet.getString( "name" ),
+                        resultSet.getBoolean( "success" ),
+                        resultSet.getTimestamp( "created_at" )
+                    ) );
+                }
             }
         }
+        return Optional.empty();
     }
 
-    private void registerFailedMigration( Migration migration )
+    private void registerFailedMigration( int version, Migration migration )
     {
         try ( Connection connection = dataSource.getConnection() )
         {
             connection.setAutoCommit( false );
 
-            try ( PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO migrations (name, success) VALUES (?, ?)" ) )
+            try ( PreparedStatement preparedStatement = connection.prepareStatement( "INSERT INTO migrations (version, name, success) VALUES (?, ?)" ) )
             {
-                preparedStatement.setString( 1, migration.getClass().getSimpleName() );
-                preparedStatement.setBoolean( 2, false );
+                preparedStatement.setInt( 1, version );
+                preparedStatement.setString( 2, migration.getClass().getSimpleName() );
+                preparedStatement.setBoolean( 3, false );
                 preparedStatement.executeUpdate();
             }
 
@@ -135,5 +182,15 @@ public class SqlMigrator
         {
             throw new MigrationException( e );
         }
+    }
+
+    @Value
+    static class MigrationRecord
+    {
+        int id;
+        int version;
+        String name;
+        boolean success;
+        Timestamp createdAt;
     }
 }
