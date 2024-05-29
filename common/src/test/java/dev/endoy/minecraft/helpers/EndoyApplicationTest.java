@@ -17,7 +17,7 @@ import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
 @Getter
-public abstract class EndoyApplicationTest extends EndoyApplication
+public class EndoyApplicationTest extends EndoyApplication
 {
 
     private File dataFolder;
@@ -70,5 +70,10 @@ public abstract class EndoyApplicationTest extends EndoyApplication
 
             }
         };
+    }
+
+    @Override
+    public void registerListeners( Object listenersInstance )
+    {
     }
 }
