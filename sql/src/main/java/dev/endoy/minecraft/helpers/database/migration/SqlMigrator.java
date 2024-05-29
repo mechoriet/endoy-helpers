@@ -111,7 +111,7 @@ public class SqlMigrator
 
             try ( ResultSet resultSet = preparedStatement.executeQuery() )
             {
-                return resultSet.getInt( 1 ) == 0;
+                return resultSet.next() && resultSet.getInt( 1 ) == 0;
             }
         }
     }
