@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.endoy.minecraft</groupId>
         <artifactId>helpers</artifactId>
-        <version>0.0.23</version>
+        <version>0.0.24</version>
     </parent>
 
     <groupId>dev.endoy.minecraft.helpers</groupId>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
