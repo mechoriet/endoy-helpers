@@ -20,7 +20,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>dev.endoy.minecraft.helpers</groupId>
+            <groupId>dev.endoy.helpers</groupId>
             <artifactId>common</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
