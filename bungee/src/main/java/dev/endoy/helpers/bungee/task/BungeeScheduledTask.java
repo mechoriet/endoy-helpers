@@ -3,7 +3,6 @@ package dev.endoy.helpers.bungee.task;
 import dev.endoy.helpers.common.task.ScheduledTask;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ProxyServer;
-import org.bukkit.Bukkit;
 
 @RequiredArgsConstructor
 public class BungeeScheduledTask implements ScheduledTask
