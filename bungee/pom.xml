@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.endoy.helpers</groupId>
         <artifactId>helpers</artifactId>
-        <version>0.0.28</version>
+        <version>0.0.29</version>
     </parent>
 
     <artifactId>bungee</artifactId>
@@ -38,6 +38,5 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
-
     </dependencies>
 </project>

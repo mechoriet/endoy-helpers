@@ -3,10 +3,14 @@ package dev.endoy.helpers.common.injector;
 import dev.endoy.configuration.api.FileStorageType;
 import dev.endoy.configuration.api.IConfiguration;
 import dev.endoy.helpers.common.EndoyApplication;
-import dev.endoy.helpers.common.utils.Utils;
+import dev.endoy.helpers.common.configuration.ValueTransformerRegistry;
+import dev.endoy.helpers.common.transform.TransformValue;
+import dev.endoy.helpers.common.transform.ValueTransformer;
 import dev.endoy.helpers.common.utils.ReflectionUtils;
+import dev.endoy.helpers.common.utils.Utils;
 import lombok.RequiredArgsConstructor;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -53,6 +57,10 @@ public class ConfigurationInjector
 
     void injectConfigurationFields( Class<?> clazz, Object instance )
     {
+        if ( clazz.isAnnotationPresent( Configuration.class ) )
+        {
+            return;
+        }
         this.injectConfigurationFields(
             clazz,
             instance,
@@ -94,10 +102,11 @@ public class ConfigurationInjector
                             return;
                         }
 
-                        ReflectionUtils.setFieldValue( field, instance, configValue );
+                        this.setConfigurationValue( field, instance, configValue );
                     }
                 }
-                catch ( InstantiationException | InvocationTargetException | IllegalAccessException e )
+                catch ( InstantiationException | InvocationTargetException | IllegalAccessException |
+                        NoSuchMethodException e )
                 {
                     throw new FailedInjectionException( e );
                 }
@@ -117,5 +126,22 @@ public class ConfigurationInjector
     public Object getConfigurationValue( IConfiguration configuration, String prefix, String name, Value value )
     {
         return configuration.get( prefix + ( value.path().isEmpty() ? Utils.convertCamelCaseToDashNotation( name ) : value.path() ) );
+    }
+
+    private void setConfigurationValue( Field field, Object instance, Object configValue ) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException
+    {
+        if ( field.getType().isEnum() )
+        {
+            configValue = Enum.valueOf( (Class<Enum>) field.getType(), String.valueOf( configValue ) );
+        }
+        else if ( field.isAnnotationPresent( TransformValue.class ) )
+        {
+            TransformValue transformValue = field.getAnnotation( TransformValue.class );
+            ValueTransformer<?> transformer = ValueTransformerRegistry.getOrCreateValueTransformer( transformValue.value() );
+
+            configValue = transformer.transformFromConfigValue( configValue );
+        }
+
+        ReflectionUtils.setFieldValue( field, instance, configValue );
     }
 }

@@ -8,12 +8,14 @@ import dev.endoy.configuration.yaml.YamlConfiguration;
 import dev.endoy.configuration.yaml.YamlConfigurationOptions;
 import dev.endoy.configuration.yaml.comments.CommentType;
 import dev.endoy.helpers.common.EndoyApplication;
-import dev.endoy.helpers.common.utils.Utils;
 import dev.endoy.helpers.common.injector.Comment;
 import dev.endoy.helpers.common.injector.Configuration;
 import dev.endoy.helpers.common.injector.ConfigurationSection;
 import dev.endoy.helpers.common.injector.Value;
+import dev.endoy.helpers.common.transform.TransformValue;
+import dev.endoy.helpers.common.transform.ValueTransformer;
 import dev.endoy.helpers.common.utils.ReflectionUtils;
+import dev.endoy.helpers.common.utils.Utils;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
@@ -106,6 +108,18 @@ public class ConfigurationManager
             try
             {
                 fieldValue = ReflectionUtils.getFieldValue( declaredField, instance );
+
+                if ( declaredField.getType().isEnum() )
+                {
+                    fieldValue = fieldValue.toString();
+                }
+                else if ( declaredField.isAnnotationPresent( TransformValue.class ) )
+                {
+                    TransformValue transformValue = declaredField.getAnnotation( TransformValue.class );
+                    ValueTransformer transformer = ValueTransformerRegistry.getOrCreateValueTransformer( transformValue.value() );
+
+                    fieldValue = transformer.transformToConfigValue( fieldValue );
+                }
             }
             catch ( IllegalAccessException e )
             {

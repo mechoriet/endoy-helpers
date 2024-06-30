@@ -1,8 +1,8 @@
 package dev.endoy.helpers.common;
 
+import dev.endoy.helpers.common.injector.Injector;
 import dev.endoy.helpers.common.task.ScheduledTask;
 import dev.endoy.helpers.common.task.TaskManager;
-import dev.endoy.helpers.common.injector.Injector;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
@@ -13,14 +13,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
-@Getter
 public class EndoyApplicationTest extends EndoyApplication
 {
 
-    private File dataFolder;
+    protected static File dataFolder;
     @Getter
     @Setter
     private Injector injector;
+
+    private boolean dataFolderCreated = false;
 
     public EndoyApplicationTest()
     {
@@ -29,13 +30,20 @@ public class EndoyApplicationTest extends EndoyApplication
     @BeforeEach
     public void setUp() throws IOException
     {
-        this.dataFolder = Files.createTempDirectory( "endoy-helpers" ).toFile();
+        if ( dataFolder == null )
+        {
+            dataFolder = Files.createTempDirectory( "endoy-helpers" ).toFile();
+            dataFolderCreated = true;
+        }
     }
 
     @AfterEach
     public void tearDown()
     {
-        this.dataFolder.delete();
+        if ( dataFolderCreated )
+        {
+            dataFolder.delete();
+        }
     }
 
     @Override
@@ -67,6 +75,12 @@ public class EndoyApplicationTest extends EndoyApplication
                 };
             }
         };
+    }
+
+    @Override
+    public File getDataFolder()
+    {
+        return dataFolder;
     }
 
     @Override
