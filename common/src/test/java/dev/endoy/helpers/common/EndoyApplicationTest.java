@@ -1,7 +1,8 @@
-package dev.endoy.helpers;
+package dev.endoy.helpers.common;
 
-import dev.endoy.helpers.task.TaskManager;
-import dev.endoy.helpers.injector.Injector;
+import dev.endoy.helpers.common.task.ScheduledTask;
+import dev.endoy.helpers.common.task.TaskManager;
+import dev.endoy.helpers.common.injector.Injector;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
@@ -43,27 +44,27 @@ public class EndoyApplicationTest extends EndoyApplication
         return new TaskManager()
         {
             @Override
-            public int runTask( Runnable runnable, boolean async )
+            public ScheduledTask runTask( Runnable runnable, boolean async )
             {
-                return 0;
+                return () ->
+                {
+                };
             }
 
             @Override
-            public int runTaskLater( Runnable runnable, boolean async, long delay, TimeUnit timeUnit )
+            public ScheduledTask runTaskLater( Runnable runnable, boolean async, long delay, TimeUnit timeUnit )
             {
-                return 0;
+                return () ->
+                {
+                };
             }
 
             @Override
-            public int runTaskTimer( Runnable runnable, boolean async, long delay, long period, TimeUnit timeUnit )
+            public ScheduledTask runTaskTimer( Runnable runnable, boolean async, long delay, long period, TimeUnit timeUnit )
             {
-                return 0;
-            }
-
-            @Override
-            public void cancelTask( int taskId )
-            {
-
+                return () ->
+                {
+                };
             }
         };
     }

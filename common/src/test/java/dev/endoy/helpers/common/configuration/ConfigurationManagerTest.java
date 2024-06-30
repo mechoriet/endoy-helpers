@@ -1,9 +1,8 @@
-package dev.endoy.helpers.configuration;
+package dev.endoy.helpers.common.configuration;
 
 import com.google.common.io.Files;
-import dev.endoy.helpers.EndoyApplicationTest;
-import dev.endoy.helpers.injector.*;
-import dev.endoy.minecraft.helpers.injector.*;
+import dev.endoy.helpers.common.EndoyApplicationTest;
+import dev.endoy.helpers.common.injector.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

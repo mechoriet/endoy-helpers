@@ -1,8 +1,8 @@
-package dev.endoy.helpers.injector.withoutcirculardeps;
+package dev.endoy.helpers.common.injector.withoutcirculardeps;
 
-import dev.endoy.helpers.EndoyApplicationTest;
-import dev.endoy.helpers.injector.Component;
-import dev.endoy.helpers.injector.Injector;
+import dev.endoy.helpers.common.EndoyApplicationTest;
+import dev.endoy.helpers.common.injector.Component;
+import dev.endoy.helpers.common.injector.Injector;
 import lombok.Value;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
