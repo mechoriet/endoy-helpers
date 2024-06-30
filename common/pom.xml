@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.endoy.helpers</groupId>
         <artifactId>helpers</artifactId>
-        <version>0.0.27</version>
+        <version>0.0.28</version>
     </parent>
 
     <artifactId>common</artifactId>
@@ -42,12 +42,6 @@
             <artifactId>cron-utils</artifactId>
             <version>9.2.0</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>dev.endoy.configuration</groupId>
