@@ -65,12 +65,10 @@ public interface TaskManager
             } );
     }
 
-    int runTask( Runnable runnable, boolean async );
+    ScheduledTask runTask( Runnable runnable, boolean async );
 
-    int runTaskLater( Runnable runnable, boolean async, long delay, TimeUnit timeUnit );
+    ScheduledTask runTaskLater( Runnable runnable, boolean async, long delay, TimeUnit timeUnit );
 
-    int runTaskTimer( Runnable runnable, boolean async, long delay, long period, TimeUnit timeUnit );
-
-    void cancelTask( int taskId );
+    ScheduledTask runTaskTimer( Runnable runnable, boolean async, long delay, long period, TimeUnit timeUnit );
 
 }

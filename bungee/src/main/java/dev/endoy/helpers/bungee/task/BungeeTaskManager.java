@@ -14,26 +14,20 @@ public class BungeeTaskManager implements TaskManager
     private final Plugin plugin;
 
     @Override
-    public int runTask( Runnable runnable, boolean async )
+    public BungeeScheduledTask runTask( Runnable runnable, boolean async )
     {
-        return ProxyServer.getInstance().getScheduler().runAsync( this.plugin, runnable ).getId();
+        return new BungeeScheduledTask( ProxyServer.getInstance().getScheduler().runAsync( this.plugin, runnable ).getId() );
     }
 
     @Override
-    public int runTaskLater( Runnable runnable, boolean async, long delay, TimeUnit timeUnit )
+    public BungeeScheduledTask runTaskLater( Runnable runnable, boolean async, long delay, TimeUnit timeUnit )
     {
-        return ProxyServer.getInstance().getScheduler().schedule( this.plugin, runnable, delay, timeUnit ).getId();
+        return new BungeeScheduledTask( ProxyServer.getInstance().getScheduler().schedule( this.plugin, runnable, delay, timeUnit ).getId() );
     }
 
     @Override
-    public int runTaskTimer( Runnable runnable, boolean async, long delay, long period, TimeUnit timeUnit )
+    public BungeeScheduledTask runTaskTimer( Runnable runnable, boolean async, long delay, long period, TimeUnit timeUnit )
     {
-        return ProxyServer.getInstance().getScheduler().schedule( this.plugin, runnable, delay, period, timeUnit ).getId();
-    }
-
-    @Override
-    public void cancelTask( int taskId )
-    {
-        ProxyServer.getInstance().getScheduler().cancel( taskId );
+        return new BungeeScheduledTask( ProxyServer.getInstance().getScheduler().schedule( this.plugin, runnable, delay, period, timeUnit ).getId() );
     }
 }

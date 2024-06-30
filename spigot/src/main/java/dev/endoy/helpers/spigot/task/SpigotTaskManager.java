@@ -4,6 +4,7 @@ import dev.endoy.helpers.common.task.TaskManager;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,66 +15,72 @@ public class SpigotTaskManager implements TaskManager
     private final Plugin plugin;
 
     @Override
-    public int runTask( Runnable runnable, boolean async )
+    public SpigotScheduledTask runTask( Runnable runnable, boolean async )
     {
+        BukkitTask bukkitTask;
+
         if ( async )
         {
-            return Bukkit.getScheduler().runTaskAsynchronously( this.plugin, runnable ).getTaskId();
+            bukkitTask = Bukkit.getScheduler().runTaskAsynchronously( this.plugin, runnable );
         }
         else
         {
-            return Bukkit.getScheduler().runTask( this.plugin, runnable ).getTaskId();
+            bukkitTask = Bukkit.getScheduler().runTask( this.plugin, runnable );
         }
+
+        return new SpigotScheduledTask( bukkitTask.getTaskId() );
     }
 
     @Override
-    public int runTaskLater( Runnable runnable, boolean async, long delay, TimeUnit timeUnit )
+    public SpigotScheduledTask runTaskLater( Runnable runnable, boolean async, long delay, TimeUnit timeUnit )
     {
+        BukkitTask bukkitTask;
+
         if ( async )
         {
-            return Bukkit.getScheduler().runTaskLaterAsynchronously(
+            bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(
                 this.plugin,
                 runnable,
                 this.convertToTicks( delay, timeUnit )
-            ).getTaskId();
+            );
         }
         else
         {
-            return Bukkit.getScheduler().runTaskLater(
+            bukkitTask = Bukkit.getScheduler().runTaskLater(
                 this.plugin,
                 runnable,
                 this.convertToTicks( delay, timeUnit )
-            ).getTaskId();
+            );
         }
+
+        return new SpigotScheduledTask( bukkitTask.getTaskId() );
     }
 
     @Override
-    public int runTaskTimer( Runnable runnable, boolean async, long delay, long period, TimeUnit timeUnit )
+    public SpigotScheduledTask runTaskTimer( Runnable runnable, boolean async, long delay, long period, TimeUnit timeUnit )
     {
+        BukkitTask bukkitTask;
+
         if ( async )
         {
-            return Bukkit.getScheduler().runTaskTimerAsynchronously(
+            bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(
                 this.plugin,
                 runnable,
                 this.convertToTicks( delay, timeUnit ),
                 this.convertToTicks( period, timeUnit )
-            ).getTaskId();
+            );
         }
         else
         {
-            return Bukkit.getScheduler().runTaskTimer(
+            bukkitTask = Bukkit.getScheduler().runTaskTimer(
                 this.plugin,
                 runnable,
                 this.convertToTicks( delay, timeUnit ),
                 this.convertToTicks( period, timeUnit )
-            ).getTaskId();
+            );
         }
-    }
 
-    @Override
-    public void cancelTask( int taskId )
-    {
-        Bukkit.getScheduler().cancelTask( taskId );
+        return new SpigotScheduledTask( bukkitTask.getTaskId() );
     }
 
     private Long convertToTicks( long delay, TimeUnit timeUnit )

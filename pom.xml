@@ -14,6 +14,7 @@
         <module>sql</module>
         <module>spring</module>
         <module>bungee</module>
+        <module>velocity</module>
     </modules>
 
     <properties>

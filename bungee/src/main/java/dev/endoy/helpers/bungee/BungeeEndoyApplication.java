@@ -17,7 +17,7 @@ public class BungeeEndoyApplication extends EndoyApplication
     private final Class<?> currentClass;
     @Getter
     private final Injector injector;
-    private final BungeeTaskManager spigotTaskManager;
+    private final BungeeTaskManager bungeeTaskManager;
     @Getter
     private final Plugin plugin;
 
@@ -27,7 +27,7 @@ public class BungeeEndoyApplication extends EndoyApplication
 
         this.plugin = plugin;
         this.currentClass = clazz;
-        this.spigotTaskManager = new BungeeTaskManager( plugin );
+        this.bungeeTaskManager = new BungeeTaskManager( plugin );
 
         this.injector = Injector.forProject( this.currentClass, this );
         this.registerDefaultInjectables();
@@ -42,7 +42,7 @@ public class BungeeEndoyApplication extends EndoyApplication
     @Override
     public TaskManager getTaskManager()
     {
-        return this.spigotTaskManager;
+        return this.bungeeTaskManager;
     }
 
     @Override
