@@ -1,11 +1,13 @@
 package dev.endoy.helpers.common.injector;
 
+import dev.endoy.configuration.api.IConfiguration;
 import dev.endoy.helpers.common.EndoyApplication;
 import dev.endoy.helpers.common.task.TaskExecutionException;
 import dev.endoy.helpers.common.utils.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.function.Consumer;
@@ -13,6 +15,8 @@ import java.util.stream.Collectors;
 
 public class Injector
 {
+
+    // TODO: properly test conditionals (just ConditionalOnConfigProperty atm) and interface injection (classes that implement a given interface)
 
     private final Class<?> currentClass;
     private final Map<Class<?>, Object> injectables = new HashMap<>();
@@ -140,6 +144,7 @@ public class Injector
     {
         List<InjectedType<T>> injectedTypes = ReflectionUtils.getClassesInPackageAnnotatedWith( this.currentClass, annotationClass )
             .stream()
+            .filter( this::checkConditionals )
             .map( clazz ->
             {
                 Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
@@ -157,6 +162,11 @@ public class Injector
 
     private Object initializeInjectable( Class<?> clazz )
     {
+        if ( clazz.isInterface() || Modifier.isAbstract( clazz.getModifiers() ) )
+        {
+            return initializeInjectable( getInjectableClassFromParentClass( clazz ) );
+        }
+
         try
         {
             Class<? extends Annotation> annotation = this.getInjectableAnnotation( clazz );
@@ -294,9 +304,32 @@ public class Injector
 
     private boolean isInjectable( Class<?> clazz )
     {
+        if ( clazz.isInterface() || Modifier.isAbstract( clazz.getModifiers() ) )
+        {
+            Collection<Class<?>> classes = ReflectionUtils.getClassesInPackageImplementing( this.currentClass, clazz );
+
+            return classes.stream().anyMatch( this::isInjectable );
+        }
+
         return this.getInjectableAnnotations()
             .stream()
             .anyMatch( clazz::isAnnotationPresent );
+    }
+
+    private Class<?> getInjectableClassFromParentClass( Class<?> clazz )
+    {
+        if ( !clazz.isInterface() && !Modifier.isAbstract( clazz.getModifiers() ) )
+        {
+            return clazz;
+        }
+
+        Collection<Class<?>> classes = ReflectionUtils.getClassesInPackageImplementing( this.currentClass, clazz );
+
+        return classes
+            .stream()
+            .filter( this::checkConditionals )
+            .findFirst()
+            .orElseThrow( () -> new InvalidInjectionContextException( "Class is not an injectable: " + clazz.getName() ) );
     }
 
     private Class<? extends Annotation> getInjectableAnnotation( Class<?> clazz )
@@ -311,6 +344,23 @@ public class Injector
     private List<Class<? extends Annotation>> getInjectableAnnotations()
     {
         return List.of( Configuration.class, Command.class, Listeners.class, Component.class, Manager.class, Service.class, Task.class );
+    }
+
+    private boolean checkConditionals( Class<?> clazz )
+    {
+        if ( clazz.isAnnotationPresent( ConditionalOnConfigProperty.class ) )
+        {
+            ConditionalOnConfigProperty conditionalOnConfigProperty = clazz.getAnnotation( ConditionalOnConfigProperty.class );
+            IConfiguration configuration = endoyApplication.getConfigurationManager().getOrLoadConfig(
+                conditionalOnConfigProperty.fileType(),
+                conditionalOnConfigProperty.filePath()
+            );
+            Object value = configuration.get( conditionalOnConfigProperty.path() );
+
+            return Objects.equals( String.valueOf( value ), conditionalOnConfigProperty.value() );
+        }
+
+        return true;
     }
 
     record InjectedType<T>(T annotation, Object instance)
