@@ -16,8 +16,10 @@ public @interface ConditionalOnConfigProperty
 
     String filePath() default "config.yml";
 
-    String path();
+    String propertyPath();
 
-    String value();
+    String havingValue();
+
+    boolean matchIfMissing() default false;
 
 }

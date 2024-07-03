@@ -1,9 +1,9 @@
 package dev.endoy.helpers.spigot;
 
-import dev.endoy.helpers.spigot.task.SpigotTaskManager;
 import dev.endoy.helpers.common.EndoyApplication;
 import dev.endoy.helpers.common.injector.Injector;
 import dev.endoy.helpers.common.task.TaskManager;
+import dev.endoy.helpers.spigot.task.SpigotTaskManager;
 import lombok.Getter;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;

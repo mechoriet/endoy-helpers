@@ -10,16 +10,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Injector
 {
 
-    // TODO: properly test conditionals (just ConditionalOnConfigProperty atm) and interface injection (classes that implement a given interface)
-
     private final Class<?> currentClass;
-    private final Map<Class<?>, Object> injectables = new HashMap<>();
+    private final Map<Class<?>, Object> injectables = new ConcurrentHashMap<>();
     private final ConfigurationInjector configurationInjector;
     private final EndoyApplication endoyApplication;
 
@@ -43,6 +42,24 @@ public class Injector
         }
 
         this.injectables.put( clazz, instance );
+
+        while ( clazz.getSuperclass() != null && !clazz.getSuperclass().equals( Object.class ) )
+        {
+            clazz = clazz.getSuperclass();
+
+            if ( !this.injectables.containsKey( clazz ) )
+            {
+                this.injectables.put( clazz, instance );
+            }
+        }
+
+        for ( Class<?> interfaze : clazz.getInterfaces() )
+        {
+            if ( !this.injectables.containsKey( interfaze ) )
+            {
+                this.injectables.put( interfaze, instance );
+            }
+        }
     }
 
     @SuppressWarnings( "unchecked" )
@@ -162,7 +179,7 @@ public class Injector
 
     private Object initializeInjectable( Class<?> clazz )
     {
-        if ( clazz.isInterface() || Modifier.isAbstract( clazz.getModifiers() ) )
+        if ( this.isInterfaceOrAbstract( clazz ) )
         {
             return initializeInjectable( getInjectableClassFromParentClass( clazz ) );
         }
@@ -185,9 +202,7 @@ public class Injector
                 {
                     if ( this.isInjectable( parameter.getType() ) )
                     {
-                        Object injectable = this.initializeInjectable( parameter.getType() );
-                        this.injectables.put( parameter.getType(), injectable );
-                        parameters.add( injectable );
+                        parameters.add( this.initializeInjectable( parameter.getType() ) );
                     }
                     else if ( parameter.isAnnotationPresent( Value.class ) )
                     {
@@ -205,7 +220,7 @@ public class Injector
             Object instance = constructor.newInstance( parameters.toArray() );
 
             constructor.setAccessible( false );
-            this.injectables.put( clazz, instance );
+            this.registerInjectable( clazz, instance );
 
             if ( annotation.equals( Configuration.class ) )
             {
@@ -228,17 +243,22 @@ public class Injector
             {
                 try
                 {
+                    Class<?> fieldClass = field.getType();
+
+                    if ( this.isInterfaceOrAbstract( fieldClass ) && this.isInjectable( fieldClass ) )
+                    {
+                        fieldClass = this.getInjectableClassFromParentClass( fieldClass );
+                    }
+
                     Object value;
 
-                    if ( this.injectables.containsKey( field.getType() ) )
+                    if ( this.injectables.containsKey( fieldClass ) )
                     {
-                        value = this.injectables.get( field.getType() );
+                        value = this.injectables.get( fieldClass );
                     }
                     else
                     {
-                        Object injectable = this.initializeInjectable( field.getType() );
-                        this.injectables.put( field.getType(), injectable );
-                        value = injectable;
+                        value = this.initializeInjectable( field.getType() );
                     }
 
                     ReflectionUtils.setFieldValue( field, instance, value );
@@ -304,7 +324,7 @@ public class Injector
 
     private boolean isInjectable( Class<?> clazz )
     {
-        if ( clazz.isInterface() || Modifier.isAbstract( clazz.getModifiers() ) )
+        if ( this.isInterfaceOrAbstract( clazz ) )
         {
             Collection<Class<?>> classes = ReflectionUtils.getClassesInPackageImplementing( this.currentClass, clazz );
 
@@ -318,9 +338,9 @@ public class Injector
 
     private Class<?> getInjectableClassFromParentClass( Class<?> clazz )
     {
-        if ( !clazz.isInterface() && !Modifier.isAbstract( clazz.getModifiers() ) )
+        if ( !this.isInterfaceOrAbstract( clazz ) )
         {
-            return clazz;
+            throw new IllegalStateException( "Class is not an interface or abstract class: " + clazz.getName() );
         }
 
         Collection<Class<?>> classes = ReflectionUtils.getClassesInPackageImplementing( this.currentClass, clazz );
@@ -355,12 +375,22 @@ public class Injector
                 conditionalOnConfigProperty.fileType(),
                 conditionalOnConfigProperty.filePath()
             );
-            Object value = configuration.get( conditionalOnConfigProperty.path() );
+            Object value = configuration.get( conditionalOnConfigProperty.propertyPath() );
 
-            return Objects.equals( String.valueOf( value ), conditionalOnConfigProperty.value() );
+            if ( value == null && conditionalOnConfigProperty.matchIfMissing() )
+            {
+                return true;
+            }
+
+            return Objects.equals( String.valueOf( value ), conditionalOnConfigProperty.havingValue() );
         }
 
         return true;
+    }
+
+    private boolean isInterfaceOrAbstract( Class<?> clazz )
+    {
+        return clazz.isInterface() || Modifier.isAbstract( clazz.getModifiers() );
     }
 
     record InjectedType<T>(T annotation, Object instance)

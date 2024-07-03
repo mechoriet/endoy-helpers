@@ -1,14 +1,17 @@
-package dev.endoy.helpers.common.injector.postconstruct;
+package dev.endoy.helpers.common.injector;
 
 import dev.endoy.helpers.common.EndoyApplicationTest;
-import dev.endoy.helpers.common.injector.Component;
-import dev.endoy.helpers.common.injector.Injector;
-import dev.endoy.helpers.common.injector.PostConstruct;
+import dev.endoy.helpers.common.TestHelper;
+import dev.endoy.helpers.common.utils.ReflectionUtils;
 import lombok.Value;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
 class InjectableWithPostConstructTest extends EndoyApplicationTest
 {
@@ -20,11 +23,21 @@ class InjectableWithPostConstructTest extends EndoyApplicationTest
     @DisplayName( "Test PostConstruct to be functional" )
     void testInject()
     {
-        Injector injector = Injector.forProject( this.getClass(), this );
-        injector.inject();
+        try ( MockedStatic<ReflectionUtils> reflectionUtils = mockStatic( ReflectionUtils.class ) )
+        {
+            reflectionUtils.when( () -> ReflectionUtils.getClassesInPackage( this.getClass() ) )
+                .thenReturn( List.of(
+                    TestComponent.class,
+                    TestComponent2.class
+                ) );
+            TestHelper.callRealMethods( reflectionUtils );
 
-        assertTrue( postConstruct1Called );
-        assertTrue( postConstruct2Called );
+            Injector injector = Injector.forProject( this.getClass(), this );
+            injector.inject();
+
+            assertTrue( postConstruct1Called );
+            assertTrue( postConstruct2Called );
+        }
     }
 
     @Value
