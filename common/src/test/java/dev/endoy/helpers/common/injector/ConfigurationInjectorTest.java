@@ -1,29 +1,73 @@
-package dev.endoy.helpers.common.configuration;
+package dev.endoy.helpers.common.injector;
 
-import com.google.common.io.Files;
 import dev.endoy.helpers.common.EndoyApplicationTest;
 import dev.endoy.helpers.common.TestHelper;
-import dev.endoy.helpers.common.injector.*;
 import dev.endoy.helpers.common.transform.TransformValue;
 import dev.endoy.helpers.common.transform.ValueTransformer;
 import dev.endoy.helpers.common.utils.ReflectionUtils;
 import lombok.Getter;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mockStatic;
 
-class ConfigurationManagerTest extends EndoyApplicationTest
+class ConfigurationInjectorTest extends EndoyApplicationTest
 {
 
+    @BeforeAll
+    public static void setup() throws IOException
+    {
+        dataFolder = TestHelper.createTempDirectory();
+
+        Files.writeString(
+            new File( dataFolder, "config.yml" ).toPath(),
+            """
+                test: test
+                test-section:
+                  test: test
+                  test-nr: 123
+                """
+        );
+
+        Files.writeString(
+            new File( dataFolder, "config-with-comments.yml" ).toPath(),
+            """
+                # This is a test
+                test: test
+                # This is a test section
+                # With a second line
+                # A third line
+                # And even a fourth line :O
+                test-section:
+                  # This is a test section with test comment
+                  test: test
+                  # This is a test section with test number comment
+                  # Even with multi line comments!!!1!!
+                  test-nr: 123"""
+        );
+        Files.writeString(
+            new File( dataFolder, "config-with-enum.yml" ).toPath(),
+            """
+                test: TEST
+                """
+        );
+        Files.writeString(
+            new File( dataFolder, "config-with-transform.yml" ).toPath(),
+            """
+                test: testing
+                """
+        );
+    }
+
     @Test
-    void testCreateDefault() throws IOException
+    void testCreateDefault()
     {
         try ( MockedStatic<ReflectionUtils> reflectionUtils = mockStatic( ReflectionUtils.class ) )
         {
@@ -34,32 +78,27 @@ class ConfigurationManagerTest extends EndoyApplicationTest
                     TestConfigurationWithComments.class,
                     TestConfigurationWithComments.TestConfigurationSectionWithComments.class,
                     TestConfigurationWithEnum.class,
-                    TestConfigurationWithEnum.TestEnum.class,
                     TestConfigurationWithTransform.class,
-                    TestConfigurationWithTransform.TransformedTest.class,
-                    TestConfigurationWithTransform.TestTransform.class
+                    TestTransform.class,
+                    TransformedTest.class,
+                    TestEnum.class
                 ) );
+
             TestHelper.callRealMethods( reflectionUtils );
 
             Injector injector = Injector.forProject( this.getClass(), this );
             this.setInjector( injector );
-            injector.registerInjectable( TestConfiguration.class, new TestConfiguration() );
+            injector.inject();
 
-            this.getConfigurationManager().createDefault( TestConfiguration.class );
-
-            assertEquals(
-                String.join( "\n", Files.readLines( new File( getDataFolder(), "config.yml" ), StandardCharsets.UTF_8 ) ),
-                """
-                    test: test
-                    test-section:
-                      test: test
-                      test-nr: 123"""
-            );
+            TestConfiguration testConfiguration = injector.getInjectableInstance( TestConfiguration.class );
+            assertEquals( "test", testConfiguration.getTest() );
+            assertEquals( "test", testConfiguration.getTestSection().getTest() );
+            assertEquals( 123, testConfiguration.getTestSection().getTestNr() );
         }
     }
 
     @Test
-    void testCreateDefaultWithComments() throws IOException
+    void testCreateDefaultWithComments()
     {
         try ( MockedStatic<ReflectionUtils> reflectionUtils = mockStatic( ReflectionUtils.class ) )
         {
@@ -70,40 +109,26 @@ class ConfigurationManagerTest extends EndoyApplicationTest
                     TestConfigurationWithComments.class,
                     TestConfigurationWithComments.TestConfigurationSectionWithComments.class,
                     TestConfigurationWithEnum.class,
-                    TestConfigurationWithEnum.TestEnum.class,
                     TestConfigurationWithTransform.class,
-                    TestConfigurationWithTransform.TransformedTest.class,
-                    TestConfigurationWithTransform.TestTransform.class
+                    TestTransform.class,
+                    TransformedTest.class,
+                    TestEnum.class
                 ) );
-            TestHelper.callRealMethods( reflectionUtils );
 
+            TestHelper.callRealMethods( reflectionUtils );
             Injector injector = Injector.forProject( this.getClass(), this );
             this.setInjector( injector );
-            injector.registerInjectable( TestConfigurationWithComments.class, new TestConfigurationWithComments() );
+            injector.inject();
 
-            this.getConfigurationManager().createDefault( TestConfigurationWithComments.class );
-
-            assertEquals(
-                String.join( "\n", Files.readLines( new File( getDataFolder(), "config-with-comments.yml" ), StandardCharsets.UTF_8 ) ),
-                """
-                    # This is a test
-                    test: test
-                    # This is a test section
-                    # With a second line
-                    # A third line
-                    # And even a fourth line :O
-                    test-section:
-                      # This is a test section with test comment
-                      test: test
-                      # This is a test section with test number comment
-                      # Even with multi line comments!!!1!!
-                      test-nr: 123"""
-            );
+            TestConfigurationWithComments testConfiguration = injector.getInjectableInstance( TestConfigurationWithComments.class );
+            assertEquals( "test", testConfiguration.getTest() );
+            assertEquals( "test", testConfiguration.getTestSection().getTest() );
+            assertEquals( 123, testConfiguration.getTestSection().getTestNr() );
         }
     }
 
     @Test
-    void testWithEnum() throws IOException
+    void testWithEnum()
     {
         try ( MockedStatic<ReflectionUtils> reflectionUtils = mockStatic( ReflectionUtils.class ) )
         {
@@ -114,29 +139,24 @@ class ConfigurationManagerTest extends EndoyApplicationTest
                     TestConfigurationWithComments.class,
                     TestConfigurationWithComments.TestConfigurationSectionWithComments.class,
                     TestConfigurationWithEnum.class,
-                    TestConfigurationWithEnum.TestEnum.class,
                     TestConfigurationWithTransform.class,
-                    TestConfigurationWithTransform.TransformedTest.class,
-                    TestConfigurationWithTransform.TestTransform.class
+                    TestTransform.class,
+                    TransformedTest.class,
+                    TestEnum.class
                 ) );
-            TestHelper.callRealMethods( reflectionUtils );
 
+            TestHelper.callRealMethods( reflectionUtils );
             Injector injector = Injector.forProject( this.getClass(), this );
             this.setInjector( injector );
-            injector.registerInjectable( TestConfigurationWithEnum.class, new TestConfigurationWithEnum() );
+            injector.inject();
 
-            this.getConfigurationManager().createDefault( TestConfigurationWithEnum.class );
-
-            assertEquals(
-                String.join( "\n", Files.readLines( new File( getDataFolder(), "config-with-enum.yml" ), StandardCharsets.UTF_8 ) ),
-                """
-                    test: TEST"""
-            );
+            TestConfigurationWithEnum testConfiguration = injector.getInjectableInstance( TestConfigurationWithEnum.class );
+            assertEquals( TestEnum.TEST, testConfiguration.getTest() );
         }
     }
 
     @Test
-    void testWithTransform() throws IOException
+    void testWithTransform()
     {
         try ( MockedStatic<ReflectionUtils> reflectionUtils = mockStatic( ReflectionUtils.class ) )
         {
@@ -147,27 +167,28 @@ class ConfigurationManagerTest extends EndoyApplicationTest
                     TestConfigurationWithComments.class,
                     TestConfigurationWithComments.TestConfigurationSectionWithComments.class,
                     TestConfigurationWithEnum.class,
-                    TestConfigurationWithEnum.TestEnum.class,
                     TestConfigurationWithTransform.class,
-                    TestConfigurationWithTransform.TransformedTest.class,
-                    TestConfigurationWithTransform.TestTransform.class
+                    TestTransform.class,
+                    TransformedTest.class,
+                    TestEnum.class
                 ) );
-            TestHelper.callRealMethods( reflectionUtils );
 
+            TestHelper.callRealMethods( reflectionUtils );
             Injector injector = Injector.forProject( this.getClass(), this );
             this.setInjector( injector );
-            injector.registerInjectable( TestConfigurationWithTransform.class, new TestConfigurationWithTransform() );
+            injector.inject();
 
-            this.getConfigurationManager().createDefault( TestConfigurationWithTransform.class );
-
-            assertEquals(
-                String.join( "\n", Files.readLines( new File( getDataFolder(), "config-with-transform.yml" ), StandardCharsets.UTF_8 ) ),
-                """
-                    test: testing"""
-            );
+            TestConfigurationWithTransform testConfiguration = injector.getInjectableInstance( TestConfigurationWithTransform.class );
+            assertEquals( "testing", testConfiguration.getTest().getValue() );
         }
     }
 
+    public enum TestEnum
+    {
+        TEST, TESTING
+    }
+
+    @Getter
     @Configuration( filePath = "config.yml" )
     public static class TestConfiguration
     {
@@ -178,6 +199,7 @@ class ConfigurationManagerTest extends EndoyApplicationTest
         @Value( path = "test-section" )
         private final TestConfigurationSection testSection = new TestConfigurationSection();
 
+        @Getter
         @ConfigurationSection
         public static class TestConfigurationSection
         {
@@ -191,6 +213,7 @@ class ConfigurationManagerTest extends EndoyApplicationTest
         }
     }
 
+    @Getter
     @Configuration( filePath = "config-with-comments.yml" )
     public static class TestConfigurationWithComments
     {
@@ -203,6 +226,7 @@ class ConfigurationManagerTest extends EndoyApplicationTest
         @Comment( { "This is a test section", "With a second line", "A third line", "And even a fourth line :O" } )
         private final TestConfigurationSectionWithComments testSection = new TestConfigurationSectionWithComments();
 
+        @Getter
         @ConfigurationSection
         public static class TestConfigurationSectionWithComments
         {
@@ -218,6 +242,7 @@ class ConfigurationManagerTest extends EndoyApplicationTest
         }
     }
 
+    @Getter
     @Configuration( filePath = "config-with-enum.yml" )
     public static class TestConfigurationWithEnum
     {
@@ -225,12 +250,9 @@ class ConfigurationManagerTest extends EndoyApplicationTest
         @Value
         private final TestEnum test = TestEnum.TEST;
 
-        public enum TestEnum
-        {
-            TEST, TESTING
-        }
     }
 
+    @Getter
     @Configuration( filePath = "config-with-transform.yml" )
     public static class TestConfigurationWithTransform
     {
@@ -239,38 +261,38 @@ class ConfigurationManagerTest extends EndoyApplicationTest
         @TransformValue( value = TestTransform.class )
         private final TransformedTest test = new TransformedTest( "testing" );
 
+    }
 
-        public static class TestTransform implements ValueTransformer<TransformedTest>
+    public static class TestTransform implements ValueTransformer<TransformedTest>
+    {
+
+        @Override
+        public TransformedTest transformFromConfigValue( Object value )
         {
-
-            @Override
-            public TransformedTest transformFromConfigValue( Object value )
-            {
-                return new TransformedTest( (String) value );
-            }
-
-            @Override
-            public Object transformToConfigValue( TransformedTest value )
-            {
-                return value.getValue();
-            }
+            return new TransformedTest( (String) value );
         }
 
-        public static class TransformedTest
+        @Override
+        public Object transformToConfigValue( TransformedTest value )
         {
-            @Getter
-            private final String value;
+            return value.getValue();
+        }
+    }
 
-            public TransformedTest( String value )
-            {
-                this.value = value;
-            }
+    public static class TransformedTest
+    {
+        @Getter
+        private final String value;
 
-            @Override
-            public String toString()
-            {
-                return this.value;
-            }
+        public TransformedTest( String value )
+        {
+            this.value = value;
+        }
+
+        @Override
+        public String toString()
+        {
+            return this.value;
         }
     }
 }

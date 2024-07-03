@@ -57,7 +57,6 @@ public class ReflectionUtils
             .collect( Collectors.toList() );
     }
 
-
     public static Collection<Class<?>> getClassesInPackageImplementing( Class<?> baseClass, Class<?> interfaceClass )
     {
         return getClassesInPackage( baseClass )

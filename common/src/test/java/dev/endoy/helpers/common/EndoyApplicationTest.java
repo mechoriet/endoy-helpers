@@ -5,12 +5,12 @@ import dev.endoy.helpers.common.task.ScheduledTask;
 import dev.endoy.helpers.common.task.TaskManager;
 import lombok.Getter;
 import lombok.Setter;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
 public class EndoyApplicationTest extends EndoyApplication
@@ -27,12 +27,22 @@ public class EndoyApplicationTest extends EndoyApplication
     {
     }
 
+    @AfterAll
+    public static void tearDownAll()
+    {
+        if ( dataFolder != null )
+        {
+            dataFolder.delete();
+            dataFolder = null;
+        }
+    }
+
     @BeforeEach
     public void setUp() throws IOException
     {
         if ( dataFolder == null )
         {
-            dataFolder = Files.createTempDirectory( "endoy-helpers" ).toFile();
+            dataFolder = TestHelper.createTempDirectory();
             dataFolderCreated = true;
         }
     }
