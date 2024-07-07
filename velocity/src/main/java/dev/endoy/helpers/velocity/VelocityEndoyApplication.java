@@ -38,7 +38,6 @@ public class VelocityEndoyApplication extends EndoyApplication
 
         this.injector = Injector.forProject( this.currentClass, this );
         this.registerDefaultInjectables();
-        this.injector.inject();
     }
 
     public static VelocityEndoyApplication forPlugin( Object plugin, ProxyServer proxyServer, File dataFolder )
@@ -72,5 +71,9 @@ public class VelocityEndoyApplication extends EndoyApplication
         this.injector.registerInjectable( Injector.class, this.injector );
         this.injector.registerInjectable( plugin.getClass(), plugin );
         this.injector.registerInjectable( ProxyServer.class, this.proxyServer );
+    }
+
+    public void inject() {
+        this.injector.inject();
     }
 }

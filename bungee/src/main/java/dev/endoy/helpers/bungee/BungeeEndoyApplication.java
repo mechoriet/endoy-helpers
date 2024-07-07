@@ -31,7 +31,6 @@ public class BungeeEndoyApplication extends EndoyApplication
 
         this.injector = Injector.forProject( this.currentClass, this );
         this.registerDefaultInjectables();
-        this.injector.inject();
     }
 
     public static BungeeEndoyApplication forPlugin( Plugin plugin )
@@ -65,5 +64,9 @@ public class BungeeEndoyApplication extends EndoyApplication
         this.injector.registerInjectable( BungeeEndoyApplication.class, this );
         this.injector.registerInjectable( Injector.class, this.injector );
         this.injector.registerInjectable( plugin.getClass(), plugin );
+    }
+
+    public void inject() {
+        this.injector.inject();
     }
 }

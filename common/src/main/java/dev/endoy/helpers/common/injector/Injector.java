@@ -136,6 +136,11 @@ public class Injector
             .filter( it -> it.getParameters().length == 0 )
             .forEach( method ->
             {
+                if ( !Modifier.isPublic( method.getModifiers() ) )
+                {
+                    throw new TaskExecutionException( "Task method must be public: " + method.getName() + " in class " + clazz.getName() );
+                }
+
                 Task task = method.getAnnotation( Task.class );
 
                 endoyApplication.getTaskManager().registerTask( task, () ->
@@ -296,7 +301,17 @@ public class Injector
     {
         if ( !Arrays.stream( constructor.getParameters() ).allMatch( parameter -> this.isInjectable( parameter.getType() ) || parameter.isAnnotationPresent( Value.class ) ) )
         {
-            throw new InvalidInjectionContextException( "All parameters of an Injectable constructor must be injectable: " + constructor.getDeclaringClass().getName() );
+            throw new InvalidInjectionContextException(
+                """
+                    All parameters of an Injectable constructor must be injectable: %s.
+                    The following parameters could not be injected: %s
+                    """
+                    .formatted(
+                        constructor.getDeclaringClass().getName(),
+                        Arrays.stream( constructor.getParameters() )
+                            .filter( parameter -> !this.isInjectable( parameter.getType() ) && !parameter.isAnnotationPresent( Value.class ) )
+                    )
+            );
         }
 
         this.checkForCircularDependencies( constructor.getDeclaringClass(), new HashSet<>() );
@@ -331,7 +346,7 @@ public class Injector
             return classes.stream().anyMatch( this::isInjectable );
         }
 
-        return this.getInjectableAnnotations()
+        return this.injectables.containsKey( clazz ) || this.getInjectableAnnotations()
             .stream()
             .anyMatch( clazz::isAnnotationPresent );
     }
