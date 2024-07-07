@@ -70,5 +70,6 @@ public class VelocityEndoyApplication extends EndoyApplication
         this.injector.registerInjectable( VelocityEndoyApplication.class, this );
         this.injector.registerInjectable( Injector.class, this.injector );
         this.injector.registerInjectable( plugin.getClass(), plugin );
+        this.injector.registerInjectable( ProxyServer.class, this.proxyServer );
     }
 }
