@@ -20,6 +20,7 @@ public class VelocityEndoyApplication extends EndoyApplication
     private final Object plugin;
     @Getter
     private final File dataFolder;
+    @Getter
     private final ProxyServer proxyServer;
 
     private VelocityEndoyApplication( Object plugin,
