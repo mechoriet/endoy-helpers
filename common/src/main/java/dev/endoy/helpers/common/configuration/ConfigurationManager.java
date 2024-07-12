@@ -48,14 +48,17 @@ public class ConfigurationManager
                 }
 
                 file.createNewFile();
+                this.save( endoyApplication.getInjector().getInjectableInstance( configClass ) );
             }
             catch ( IOException e )
             {
                 throw new ConfigurationException( "Failed to create default configuration file", e );
             }
         }
-
-        this.save( endoyApplication.getInjector().getInjectableInstance( configClass ) );
+        else
+        {
+            this.save( endoyApplication.getInjector().getInjectableInstance( configClass ) );
+        }
     }
 
     public void save( Object config )
