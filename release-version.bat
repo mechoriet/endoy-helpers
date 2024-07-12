@@ -1,6 +1,6 @@
 @echo off
 
-SET tag=%~1
+SET "tag=%~1"
 git "checkout" "master"
 ./mvnw.cmd "-B" "versions:set" "-DnewVersion=%tag%" "-DgenerateBackupPoms=false"
 git "add" "."
