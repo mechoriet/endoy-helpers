@@ -55,6 +55,10 @@ public class ConfigurationManager
                 throw new ConfigurationException( "Failed to create default configuration file", e );
             }
         }
+        else
+        {
+            this.save( endoyApplication.getInjector().getInjectableInstance( configClass ) );
+        }
     }
 
     public void save( Object config )
@@ -140,7 +144,10 @@ public class ConfigurationManager
             }
             else
             {
-                currentSection.set( path, fieldValue );
+                if ( !currentSection.exists( path ) )
+                {
+                    currentSection.set( path, fieldValue );
+                }
             }
         }
     }
