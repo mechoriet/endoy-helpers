@@ -1,6 +1,7 @@
 tag=$1
 
 git checkout master
+git pull
 
 ./mvnw -B versions:set -DnewVersion=$tag -DgenerateBackupPoms=false
 
