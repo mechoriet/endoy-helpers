@@ -1,8 +1,12 @@
 package dev.endoy.helpers.spigot;
 
 import dev.endoy.helpers.common.EndoyApplication;
+import dev.endoy.helpers.common.command.CommandManager;
+import dev.endoy.helpers.common.command.SimpleCommand;
+import dev.endoy.helpers.common.command.SimpleTabComplete;
 import dev.endoy.helpers.common.injector.Injector;
 import dev.endoy.helpers.common.task.TaskManager;
+import dev.endoy.helpers.spigot.command.SpigotCommandManager;
 import dev.endoy.helpers.spigot.task.SpigotTaskManager;
 import lombok.Getter;
 import org.bukkit.event.Listener;
@@ -17,6 +21,7 @@ public class SpigotEndoyApplication extends EndoyApplication
     @Getter
     private final Injector injector;
     private final SpigotTaskManager spigotTaskManager;
+    private final SpigotCommandManager spigotCommandManager;
     @Getter
     private final Plugin plugin;
 
@@ -27,6 +32,7 @@ public class SpigotEndoyApplication extends EndoyApplication
         this.plugin = plugin;
         this.currentClass = clazz;
         this.spigotTaskManager = new SpigotTaskManager( plugin );
+        this.spigotCommandManager = new SpigotCommandManager( plugin );
 
         this.injector = Injector.forProject( this.currentClass, this );
         this.registerDefaultInjectables();
@@ -41,6 +47,12 @@ public class SpigotEndoyApplication extends EndoyApplication
     public TaskManager getTaskManager()
     {
         return this.spigotTaskManager;
+    }
+
+    @Override
+    public CommandManager<? extends SimpleCommand<?>, ? extends SimpleTabComplete<?>> getCommandManager()
+    {
+        return spigotCommandManager;
     }
 
     @Override
