@@ -1,5 +1,6 @@
 package dev.endoy.helpers.bungee;
 
+import dev.endoy.helpers.bungee.logging.BungeeLogging;
 import dev.endoy.helpers.bungee.task.BungeeTaskManager;
 import dev.endoy.helpers.common.EndoyApplication;
 import dev.endoy.helpers.common.injector.Injector;
@@ -10,6 +11,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.File;
+import java.util.logging.Logger;
 
 public class BungeeEndoyApplication extends EndoyApplication
 {
@@ -24,7 +26,6 @@ public class BungeeEndoyApplication extends EndoyApplication
     private BungeeEndoyApplication( Plugin plugin, Class<?> clazz )
     {
         super();
-
         this.plugin = plugin;
         this.currentClass = clazz;
         this.bungeeTaskManager = new BungeeTaskManager( plugin );
@@ -55,6 +56,12 @@ public class BungeeEndoyApplication extends EndoyApplication
     public void registerListeners( Object listenersInstance )
     {
         ProxyServer.getInstance().getPluginManager().registerListener( this.plugin, (Listener) listenersInstance );
+    }
+
+    @Override
+    public Logger setLogger()
+    {
+        return new BungeeLogging( this );
     }
 
     @Override

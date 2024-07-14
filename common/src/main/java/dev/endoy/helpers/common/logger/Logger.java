@@ -1,14 +1,16 @@
 package dev.endoy.helpers.common.logger;
 
-import org.slf4j.LoggerFactory;
+import dev.endoy.helpers.common.EndoyApplication;
+import dev.endoy.helpers.common.injector.Inject;
 import org.slf4j.event.Level;
 
 public class Logger
 {
 
-    private final org.slf4j.Logger logger;
+    private final java.util.logging.Logger logger;
     private final Class<?> currentClass;
-
+    @Inject
+    private EndoyApplication endoyApplication;
     public Logger( Class<?> clazz )
     {
         this.currentClass = clazz;
@@ -20,7 +22,8 @@ public class Logger
         {
             // Temporarily set the context class loader to the Logger class loader so slf4j can find it's relocated classes
             currentThread.setContextClassLoader( getClass().getClassLoader() );
-            this.logger = LoggerFactory.getLogger( clazz.getName() );
+            this.logger = endoyApplication.getLogger();
+//            this.logger = (org.slf4j.Logger) endoyApplication.getLogger();
         }
         finally
         {
