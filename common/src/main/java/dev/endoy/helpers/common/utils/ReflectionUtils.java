@@ -168,4 +168,19 @@ public class ReflectionUtils
         }
         return null;
     }
+
+    public static boolean hasField( final Class<?> clazz, final String name )
+    {
+        try
+        {
+            final Field field = clazz.getDeclaredField( name );
+            field.setAccessible( true );
+            return true;
+        }
+        catch ( Exception e )
+        {
+            return false;
+        }
+    }
+
 }

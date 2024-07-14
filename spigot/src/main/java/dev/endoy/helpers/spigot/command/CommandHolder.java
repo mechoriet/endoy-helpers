@@ -1,39 +1,45 @@
 package dev.endoy.helpers.spigot.command;
 
-import dev.endoy.bungeeutilisalsx.common.BuX;
-import dev.endoy.bungeeutilisalsx.common.api.user.interfaces.User;
-import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 public class CommandHolder extends Command
 {
 
-    private final Command command;
+    private final SpigotCommand spigotCommand;
+    private final SpigotTabComplete tabComplete;
 
-    public CommandHolder( final Command command )
+    public CommandHolder( String command,
+                          List<String> aliases,
+                          SpigotCommand spigotCommand,
+                          SpigotTabComplete tabComplete )
     {
-        super( command.getName(), "", command.getAliases() );
+        super( command, "", "", aliases );
 
-        this.command = command;
+        this.spigotCommand = spigotCommand;
+        this.tabComplete = tabComplete;
     }
 
     @Override
-    public void execute( final CommandSender sender, final String[] args )
+    public boolean execute( @Nonnull CommandSender sender, @Nonnull String commandLabel, @Nonnull String[] args )
     {
-        this.command.execute( this.getUser( sender ), args );
+        spigotCommand.onCommand( sender, List.of( args ) );
+        return true;
     }
 
     @Override
-    public Iterable<String> onTabComplete( final CommandSender sender, final String[] args )
+    public List<String> tabComplete( @Nonnull CommandSender sender, @Nonnull String alias, @Nonnull String[] args ) throws IllegalArgumentException
     {
-        return this.command.onTabComplete( this.getUser( sender ), args );
-    }
-
-    private User getUser( final CommandSender sender )
-    {
-        return sender instanceof ProxiedPlayer
-            ? BuX.getApi().getUser( sender.getName() ).orElse( null )
-            : BuX.getApi().getConsoleUser();
+        if ( tabComplete == null )
+        {
+            return super.tabComplete( sender, alias, args );
+        }
+        else
+        {
+            return tabComplete.onTabComplete( sender, List.of( args ) );
+        }
     }
 }

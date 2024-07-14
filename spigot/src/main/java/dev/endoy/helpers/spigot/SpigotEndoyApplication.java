@@ -32,7 +32,7 @@ public class SpigotEndoyApplication extends EndoyApplication
         this.plugin = plugin;
         this.currentClass = clazz;
         this.spigotTaskManager = new SpigotTaskManager( plugin );
-        this.spigotCommandManager = new SpigotCommandManager( plugin );
+        this.spigotCommandManager = new SpigotCommandManager();
 
         this.injector = Injector.forProject( this.currentClass, this );
         this.registerDefaultInjectables();
@@ -77,7 +77,8 @@ public class SpigotEndoyApplication extends EndoyApplication
         this.injector.registerInjectable( plugin.getClass(), plugin );
     }
 
-    public void inject() {
+    public void inject()
+    {
         this.injector.inject();
     }
 }

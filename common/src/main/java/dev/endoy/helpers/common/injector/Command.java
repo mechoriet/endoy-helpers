@@ -16,4 +16,6 @@ public @interface Command
 
     String permission();
 
+    boolean override() default true;
+
 }

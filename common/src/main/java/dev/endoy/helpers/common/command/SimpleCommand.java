@@ -5,6 +5,6 @@ import java.util.List;
 public interface SimpleCommand<CS>
 {
 
-    void onCommand( CS commandSender, List<String> args ); // TODO: make sure these are immutable
+    void onCommand( CS commandSender, List<String> args );
 
 }
