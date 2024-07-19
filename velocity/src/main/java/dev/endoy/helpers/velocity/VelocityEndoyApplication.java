@@ -61,8 +61,7 @@ public class VelocityEndoyApplication extends EndoyApplication
     @Override
     public void registerListeners( Object listenersInstance )
     {
-
-        if ( Arrays.stream( listenersInstance.getClass().getDeclaredMethods() )
+        if ( Arrays.stream( listenersInstance.getClass().getMethods() )
             .noneMatch( method -> method.isAnnotationPresent( Subscribe.class ) ) )
         {
             System.out.println( "Class " + listenersInstance.getClass().getName() + " was skipped as it does not have any methods with @Subscribe annotation." );
