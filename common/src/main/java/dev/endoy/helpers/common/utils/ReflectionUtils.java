@@ -2,7 +2,8 @@ package dev.endoy.helpers.common.utils;
 
 import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
-import dev.endoy.helpers.common.logger.Logger;
+import dev.endoy.helpers.common.logger.EndoyLogger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -21,7 +24,7 @@ import java.util.zip.ZipInputStream;
 public class ReflectionUtils
 {
 
-    private static final Logger LOGGER = Logger.forClass( ReflectionUtils.class );
+    private static final Logger ENDOY_LOGGER = EndoyLogger.forClass( ReflectionUtils.class );
 
     private ReflectionUtils()
     {
@@ -81,7 +84,9 @@ public class ReflectionUtils
         }
         catch ( IOException e )
         {
-            LOGGER.error( "Failed to get classes in package: " + starterClass.getPackageName(), e );
+            org.slf4j.Logger logger = LoggerFactory.getLogger( ReflectionUtils.class );
+            logger.error( "Failed to get classes in package: " + starterClass.getPackageName(), e );
+            ENDOY_LOGGER.log( Level.SEVERE, "Failed to get classes in package: " + starterClass.getPackageName(), e );
             classes = new ArrayList<>();
         }
 
@@ -118,7 +123,7 @@ public class ReflectionUtils
                 }
                 catch ( IOException | ClassNotFoundException e )
                 {
-                    LOGGER.error( "Failed to get classes in package: " + starterClass.getPackageName(), e );
+                    ENDOY_LOGGER.log( Level.SEVERE, "Failed to get classes in package: " + starterClass.getPackageName(), e );
                 }
             }
         }
@@ -149,7 +154,7 @@ public class ReflectionUtils
         }
         catch ( ReflectiveOperationException e )
         {
-            LOGGER.error( "Failed to create instance of class: " + clazz.getName(), e );
+            ENDOY_LOGGER.log( Level.SEVERE, "Failed to create instance of class: " + clazz.getName(), e );
             return null;
         }
     }

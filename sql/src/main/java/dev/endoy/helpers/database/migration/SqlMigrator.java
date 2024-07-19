@@ -1,7 +1,7 @@
 package dev.endoy.helpers.database.migration;
 
 import dev.endoy.helpers.database.helpers.SqlHelpers;
-import dev.endoy.helpers.common.logger.Logger;
+import dev.endoy.helpers.common.logger.EndoyLogger;
 import dev.endoy.helpers.common.utils.ReflectionUtils;
 import lombok.Builder;
 import lombok.Value;
@@ -12,13 +12,14 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Builder
 public class SqlMigrator
 {
 
-    private static final Logger logger = Logger.forClass( SqlMigrator.class );
+    private static final Logger ENDOY_LOGGER = EndoyLogger.forClass( SqlMigrator.class );
     private final DataSource dataSource;
     private final Class<?> initMigrationClass;
 
@@ -95,7 +96,7 @@ public class SqlMigrator
                     {
                         if ( migrationRecord.getName().equalsIgnoreCase( migration.getClass().getSimpleName() ) )
                         {
-                            logger.debug( "Skipping: " + migration.getClass().getSimpleName() + " since it has already been migrated." );
+                            ENDOY_LOGGER.info( "Skipping: " + migration.getClass().getSimpleName() + " since it has already been migrated." );
                         }
                         else
                         {
@@ -111,7 +112,7 @@ public class SqlMigrator
                 {
                     try
                     {
-                        logger.debug( "Running migration: " + migration.getClass().getSimpleName() + "." );
+                        ENDOY_LOGGER.info( "Running migration: " + migration.getClass().getSimpleName() + "." );
 
                         migration.migrate( connection );
 
