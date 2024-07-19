@@ -299,18 +299,20 @@ public class Injector
 
     private void validateConstructor( Constructor<?> constructor )
     {
-        if ( !Arrays.stream( constructor.getParameters() ).allMatch( parameter -> this.isInjectable( parameter.getType() ) || parameter.isAnnotationPresent( Value.class ) ) )
+        List<Parameter> nonInjectableParameters = Arrays.stream( constructor.getParameters() )
+            .filter( parameter -> !this.isInjectable( parameter.getType() ) && !parameter.isAnnotationPresent( Value.class ) )
+            .toList();
+        if ( !nonInjectableParameters.isEmpty() )
         {
             throw new InvalidInjectionContextException(
-                """
-                    All parameters of an Injectable constructor must be injectable: %s.
-                    The following parameters could not be injected: %s
-                    """
-                    .formatted(
-                        constructor.getDeclaringClass().getName(),
-                        Arrays.stream( constructor.getParameters() )
-                            .filter( parameter -> !this.isInjectable( parameter.getType() ) && !parameter.isAnnotationPresent( Value.class ) )
-                    )
+                String.format(
+                    "All parameters of an Injectable constructor must be injectable: %s.%n" +
+                        "The following parameters could not be injected: %s",
+                    constructor.getDeclaringClass().getName(),
+                    nonInjectableParameters.stream()
+                        .map( parameter -> String.format( "%s (position %d)", parameter.getType().getName(), Arrays.asList( constructor.getParameters() ).indexOf( parameter ) ) )
+                        .collect( Collectors.joining( ", " ) )
+                )
             );
         }
 
@@ -336,7 +338,7 @@ public class Injector
             }
         }
 
-        visitedDependencies.remove(clazz);
+        visitedDependencies.remove( clazz );
     }
 
     private boolean isInjectable( Class<?> clazz )
