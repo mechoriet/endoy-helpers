@@ -299,11 +299,11 @@ public class Injector
 
     private void validateConstructor( Constructor<?> constructor )
     {
-        if ( !Arrays.stream( constructor.getParameters() ).allMatch( parameter -> this.isInjectable( parameter.getType() ) || parameter.isAnnotationPresent( Value.class ) ) )
+        List<Parameter> nonInjectableParameters = Arrays.stream( constructor.getParameters() )
+            .filter( parameter -> !this.isInjectable( parameter.getType() ) && !parameter.isAnnotationPresent( Value.class ) )
+            .toList();
+        if ( !nonInjectableParameters.isEmpty() )
         {
-            List<Parameter> nonInjectableParameters = Arrays.stream( constructor.getParameters() )
-                .filter( parameter -> !this.isInjectable( parameter.getType() ) && !parameter.isAnnotationPresent( Value.class ) )
-                .toList();
             throw new InvalidInjectionContextException(
                 String.format(
                     "All parameters of an Injectable constructor must be injectable: %s.%n" +
