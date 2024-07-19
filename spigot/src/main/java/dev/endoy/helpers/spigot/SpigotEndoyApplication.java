@@ -5,10 +5,12 @@ import dev.endoy.helpers.common.injector.Injector;
 import dev.endoy.helpers.common.task.TaskManager;
 import dev.endoy.helpers.spigot.task.SpigotTaskManager;
 import lombok.Getter;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class SpigotEndoyApplication extends EndoyApplication
 {
@@ -52,6 +54,12 @@ public class SpigotEndoyApplication extends EndoyApplication
     @Override
     public void registerListeners( Object listenersInstance )
     {
+        if ( Arrays.stream( listenersInstance.getClass().getDeclaredMethods() )
+            .noneMatch( method -> method.isAnnotationPresent( EventHandler.class ) ) )
+        {
+            System.out.println( "Class " + listenersInstance.getClass().getName() + " was skipped as it does not have any methods with @EventHandler annotation." );
+            return;
+        }
         this.plugin.getServer().getPluginManager().registerEvents( (Listener) listenersInstance, this.plugin );
     }
 

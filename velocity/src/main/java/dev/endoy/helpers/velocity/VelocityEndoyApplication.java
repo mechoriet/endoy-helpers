@@ -1,5 +1,6 @@
 package dev.endoy.helpers.velocity;
 
+import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.proxy.ProxyServer;
 import dev.endoy.helpers.common.EndoyApplication;
 import dev.endoy.helpers.common.injector.Injector;
@@ -8,6 +9,7 @@ import dev.endoy.helpers.velocity.task.VelocityTaskManager;
 import lombok.Getter;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class VelocityEndoyApplication extends EndoyApplication
 {
@@ -59,6 +61,13 @@ public class VelocityEndoyApplication extends EndoyApplication
     @Override
     public void registerListeners( Object listenersInstance )
     {
+
+        if ( Arrays.stream( listenersInstance.getClass().getDeclaredMethods() )
+            .noneMatch( method -> method.isAnnotationPresent( Subscribe.class ) ) )
+        {
+            System.out.println( "Class " + listenersInstance.getClass().getName() + " was skipped as it does not have any methods with @Subscribe annotations." );
+            return;
+        }
         this.proxyServer.getEventManager().register( this.plugin, listenersInstance );
     }
 
