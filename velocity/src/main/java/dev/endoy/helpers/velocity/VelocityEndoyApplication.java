@@ -65,7 +65,7 @@ public class VelocityEndoyApplication extends EndoyApplication
         if ( Arrays.stream( listenersInstance.getClass().getDeclaredMethods() )
             .noneMatch( method -> method.isAnnotationPresent( Subscribe.class ) ) )
         {
-            System.out.println( "Class " + listenersInstance.getClass().getName() + " was skipped as it does not have any methods with @Subscribe annotations." );
+            System.out.println( "Class " + listenersInstance.getClass().getName() + " was skipped as it does not have any methods with @Subscribe annotation." );
             return;
         }
         this.proxyServer.getEventManager().register( this.plugin, listenersInstance );
