@@ -4,12 +4,14 @@ import dev.endoy.configuration.api.IConfiguration;
 import dev.endoy.helpers.common.EndoyApplication;
 import dev.endoy.helpers.common.task.TaskExecutionException;
 import dev.endoy.helpers.common.utils.ReflectionUtils;
+import lombok.Getter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ public class Injector
 
     private final Class<?> currentClass;
     private final Map<Class<?>, Object> injectables = new ConcurrentHashMap<>();
+    @Getter
     private final ConfigurationInjector configurationInjector;
     private final EndoyApplication endoyApplication;
 
@@ -410,6 +413,15 @@ public class Injector
     private boolean isInterfaceOrAbstract( Class<?> clazz )
     {
         return clazz.isInterface() || Modifier.isAbstract( clazz.getModifiers() );
+    }
+
+    public List<Object> getInjectablesOfType( Class<? extends Annotation> annotation )
+    {
+        return this.injectables.entrySet()
+            .stream()
+            .filter( entry -> entry.getKey().isAnnotationPresent( annotation ) )
+            .map( Entry::getValue )
+            .collect( Collectors.toList() );
     }
 
     record InjectedType<T>(T annotation, Object instance)

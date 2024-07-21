@@ -32,4 +32,9 @@ public abstract class EndoyApplication
         this.getInjector().registerInjectable( TaskManager.class, this.getTaskManager() );
         this.getInjector().registerInjectable( EndoyApplication.class, this );
     }
+
+    public void reloadConfigurations()
+    {
+        this.getInjector().getConfigurationInjector().reloadConfigurations();
+    }
 }
