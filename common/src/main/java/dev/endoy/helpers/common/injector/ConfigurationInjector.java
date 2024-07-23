@@ -27,6 +27,26 @@ public class ConfigurationInjector
         return new ConfigurationInjector( injector, endoyApplication );
     }
 
+    public void reloadConfigurations()
+    {
+        this.injector.getInjectablesOfType( Configuration.class )
+            .forEach( instance ->
+            {
+                Configuration configurationAnnotation = instance.getClass().getAnnotation( Configuration.class );
+                IConfiguration configuration = endoyApplication.getConfigurationManager().reload(
+                    configurationAnnotation.fileType(),
+                    configurationAnnotation.filePath()
+                );
+
+                this.injectConfigurationFields(
+                    instance.getClass(),
+                    instance,
+                    configuration,
+                    ""
+                );
+            } );
+    }
+
     void inject()
     {
         this.injector.initializeInjectablesOfType(

@@ -80,6 +80,22 @@ public class ConfigurationManager
         }
     }
 
+    public IConfiguration reload( FileStorageType fileStorageType, String filePath )
+    {
+        IConfiguration configuration = this.getOrLoadConfig( fileStorageType, filePath );
+
+        try
+        {
+            configuration.reload();
+        }
+        catch ( IOException e )
+        {
+            throw new ConfigurationException( "Failed to reload configuration file", e );
+        }
+
+        return configuration;
+    }
+
     public IConfiguration getOrLoadConfig( FileStorageType fileStorageType, String filePath )
     {
         return configurations.computeIfAbsent( filePath, key -> IConfiguration.loadConfiguration(

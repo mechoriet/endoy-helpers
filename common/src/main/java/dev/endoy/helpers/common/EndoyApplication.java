@@ -32,4 +32,14 @@ public abstract class EndoyApplication
         this.getInjector().registerInjectable( TaskManager.class, this.getTaskManager() );
         this.getInjector().registerInjectable( EndoyApplication.class, this );
     }
+
+    /**
+     * This will reload all configurations that are annotated with {@link dev.endoy.helpers.common.injector.Configuration}.
+     *
+     * It will, of course, not reload things that make use of the configuration values nor does it reload @Value fields.
+     */
+    public void reload()
+    {
+        this.getInjector().getConfigurationInjector().reloadConfigurations();
+    }
 }
