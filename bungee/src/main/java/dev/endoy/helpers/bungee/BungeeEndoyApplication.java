@@ -1,7 +1,11 @@
 package dev.endoy.helpers.bungee;
 
+import dev.endoy.helpers.bungee.command.BungeeCommandManager;
 import dev.endoy.helpers.bungee.task.BungeeTaskManager;
 import dev.endoy.helpers.common.EndoyApplication;
+import dev.endoy.helpers.common.command.CommandManager;
+import dev.endoy.helpers.common.command.SimpleCommand;
+import dev.endoy.helpers.common.command.SimpleTabComplete;
 import dev.endoy.helpers.common.injector.Injector;
 import dev.endoy.helpers.common.task.TaskManager;
 import lombok.Getter;
@@ -18,6 +22,7 @@ public class BungeeEndoyApplication extends EndoyApplication
     @Getter
     private final Injector injector;
     private final BungeeTaskManager bungeeTaskManager;
+    private final BungeeCommandManager bungeeCommandManager;
     @Getter
     private final Plugin plugin;
 
@@ -28,6 +33,7 @@ public class BungeeEndoyApplication extends EndoyApplication
         this.plugin = plugin;
         this.currentClass = clazz;
         this.bungeeTaskManager = new BungeeTaskManager( plugin );
+        this.bungeeCommandManager = new BungeeCommandManager( plugin );
 
         this.injector = Injector.forProject( this.currentClass, this );
         this.registerDefaultInjectables();
@@ -42,6 +48,12 @@ public class BungeeEndoyApplication extends EndoyApplication
     public TaskManager getTaskManager()
     {
         return this.bungeeTaskManager;
+    }
+
+    @Override
+    public CommandManager<? extends SimpleCommand<?>, ? extends SimpleTabComplete<?>> getCommandManager()
+    {
+        return bungeeCommandManager;
     }
 
     @Override
@@ -66,7 +78,8 @@ public class BungeeEndoyApplication extends EndoyApplication
         this.injector.registerInjectable( plugin.getClass(), plugin );
     }
 
-    public void inject() {
+    public void inject()
+    {
         this.injector.inject();
     }
 }
