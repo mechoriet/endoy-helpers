@@ -66,13 +66,15 @@ public class SpigotEndoyApplication extends EndoyApplication
     @Override
     public void registerListeners( Object listenersInstance )
     {
-        if (!Listener.class.isAssignableFrom(listenersInstance.getClass())) {
+        if ( !Listener.class.isAssignableFrom( listenersInstance.getClass() ) )
+        {
+            // TODO: replace with logger
             System.out.println( "Class " + listenersInstance.getClass().getName() + " was skipped as it does not Implement Listener Class" );
             return;
         }
-        if ( Arrays.stream( listenersInstance.getClass().getMethods() )
-            .noneMatch( method -> method.isAnnotationPresent( EventHandler.class ) ) )
+        if ( Arrays.stream( listenersInstance.getClass().getMethods() ).noneMatch( method -> method.isAnnotationPresent( EventHandler.class ) ) )
         {
+            // TODO: replace with logger
             System.out.println( "Class " + listenersInstance.getClass().getName() + " was skipped as it does not have any methods with @EventHandler annotation." );
             return;
         }
