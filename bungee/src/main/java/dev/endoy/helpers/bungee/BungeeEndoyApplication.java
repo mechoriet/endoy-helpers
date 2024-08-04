@@ -12,8 +12,10 @@ import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.event.EventHandler;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class BungeeEndoyApplication extends EndoyApplication
 {
@@ -65,6 +67,16 @@ public class BungeeEndoyApplication extends EndoyApplication
     @Override
     public void registerListeners( Object listenersInstance )
     {
+        if (!Listener.class.isAssignableFrom(listenersInstance.getClass())) {
+            System.out.println( "Class " + listenersInstance.getClass().getName() + " was skipped as it does not Implement Listener Class" );
+            return;
+        }
+        if ( Arrays.stream( listenersInstance.getClass().getMethods() )
+            .noneMatch( method -> method.isAnnotationPresent( EventHandler.class ) ) )
+        {
+            System.out.println( "Class " + listenersInstance.getClass().getName() + " was skipped as it does not have any methods with @EventHandler annotation." );
+            return;
+        }
         ProxyServer.getInstance().getPluginManager().registerListener( this.plugin, (Listener) listenersInstance );
     }
 
